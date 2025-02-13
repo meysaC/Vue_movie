@@ -11,7 +11,6 @@ export const useAxios = () => {
   });
 
 
-//   const api = "https://www.omdbapi.com/?i=tt3896198&apikey=a76fd39b";
 
   return api;
 };

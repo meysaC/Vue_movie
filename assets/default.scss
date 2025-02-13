@@ -8,7 +8,7 @@
     scroll-behavior: smooth;
   }
   
-  // app transitions
+  // app transitions more smooth to add a fade transition to every page of app
   .page-enter-active,
   .page-leave-active {
     transition: opacity 0.5s;
@@ -54,26 +54,3 @@
     margin: 0 auto;
   }
   
-  .loading {
-    height: 100vh;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  
-    @keyframes circle-loading {
-      to {
-        transform: rotateZ(360deg);
-      }
-    }
-  
-    span {
-      display: block;
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      border: 2px solid transparent;
-      border-top-color: #fff;
-      animation: circle-loading 1200ms ease infinite;
-    }
-  }

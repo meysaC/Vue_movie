@@ -1,41 +1,24 @@
 <script setup lang="ts">
-    import { type Movie } from '../../types/types' //<Movie>
-    // const { data, pending, error } = await useFetch("/api/movies-now" , {
-    //     query: { 
-    //         endpoint: "movie/now_playing"
-    //     }
-    // });
+    import { Loading } from "#components";
+    import { useNowMovies } from "~/composable/useNowMovies";
+    import { useSearchMovie } from "~/composable/useSearchMovie";
 
-//useAsyncData, veriyi sunucu tarafında hazırlar ve sayfa yüklenmeden önce çağrılmasını sağlar.
-//veri bileşen yüklenmeden önce çekilir ve sayfa daha hızlı yüklenir.
-const { data, pending, error} = await useAsyncData<Movie>("movies_now", () => 
-    $fetch("/api/movies-now"), {
-        query: { 
-            endpoint: "movie/now_playing"
-        }
-    }
-);
+  const { data,  error } = await useNowMovies(); // Şu an oynayan filmler pending,
+  const searchInput = ref(""); //kullanıcı arama metni
+  const { data: searchResults, refresh } = await useSearchMovie(searchInput); // Arama sonuçları
 
-const searchInput = ref(""); //kullanıcı arama metni
-// const { searchData, pending, error} = await useAsyncData<Movie>("searched_movies", () =>
-//     $fetch("/api/movie-search", {
-//         query: {
-//             endpoint: "search/movie"
-//         }
-//     })
-// )
-// Arama sonuçlarını tutacak reactive state
-const { data: searchResults, refresh } = useAsyncData<Movie>("searched_movies", () =>
-        $fetch("/api/movie-search", {
-            query: {
-                endpoint: "search/movie",
-                search: searchInput.value, // searchInput değeri API'ye gönderiliyor
-            },
-        }),
-    { watch: [searchInput] } // searchInput değiştikçe API çağrısı yapılacak
-);
+  if(data.value != "") console.log("hi");
 
-
+    useHead({
+      title: 'Movie App - Latest Streaming Movie Info',
+      meta: [
+       // hid: 'description',
+       {hid: 'description' ,name: 'description', content: 'My amazing site.' }
+      ]
+    });
+  // useSeoMeta({
+  //   title: "Movie App - Latest Streaming Movie Info",
+  // });
 </script>
 
 
@@ -46,18 +29,61 @@ const { data: searchResults, refresh } = useAsyncData<Movie>("searched_movies", 
 
         <!-- Search -->
         <div class="container search">
-
             <!-- v-model ->>> we wanna hook up a data value to this input to capture the user's search term  -->
-            <!-- lazy->instead of updating on each keystroke its gonna update when te user enters and leaves the actual input itself-->
-            <input @key.enter="" type="text" placeholder="Search" v-model.lazy="searchInput" /> 
+            <!-- v-model.lazy->instead of updating on each keystroke its gonna update when te user enters and leaves the actual input itself-->
+            <input 
+            @key.enter=""   
+            v-model="searchInput" 
+            type="text"
+            placeholder="Search" /> 
             <button v-show="searchInput !== ''"  @click="searchInput = ''" class="button">Clear Search</button> <!-- v-show -> we wanna show this button if something was in the input -->
         </div>
 
+        <Loading v-if="searchResults?.status === 'pending'"/>
 
         <!-- Movies -->
-        <div class="container movies">
-            <div id="movie-grid" class="movies-grid">
-                <div class="movie" v-for="movie in data?.results" :key="movie.id">
+        <div v-else class="container movies">
+
+              <!-- Search Movie -->
+            <div v-if="searchInput !== ''" id="movie-grid" class="movies-grid">
+                <div class="movie" 
+                  v-for="movie in searchResults?.results" 
+                  :key="movie.id">
+                    <div class="movie-img">
+                        <img :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`" alt="">
+                        <p class="review">{{ movie.vote_average }}</p> <!--movie divinin içinde çünkü overview ü absolute olarak imagenin üstünde göstermek istiyoruz -->
+                        <p class="overview">{{ movie.overview }}</p>
+                    </div>
+                    <div class="info">
+                        <p class="title">
+                            {{ movie.title.slice(0, 25) }} 
+                            <span v-if="movie.title.length > 25">...</span> <!-- direk p içerisine yazsaydı 25 karakterden az ise ... gözükmüş olcaktı o yüzden spna ile 25den fazlaysa gösteriyoruz-->
+                        </p>
+                        <p class="release">
+                            Realesed:
+                            {{ 
+                                new Date(movie.release_date).toLocaleString('en-us', {
+                                    month: 'long',
+                                    day: 'numeric',
+                                    year: 'numeric',
+                                }) 
+                            }}
+                        </p>
+                        <NuxtLink 
+                            class="button button-light" 
+                            :to="{name: 'movies-id', params: { id: movie.id}}"
+                            >
+                            Get More Info
+                        </NuxtLink>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Now Streaming -->
+            <div v-else id="movie-grid" class="movies-grid">
+                <div class="movie" 
+                  v-for="movie in data?.results" 
+                  :key="movie.id">
                     <div class="movie-img">
                         <img :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`" alt="">
                         <p class="review">{{ movie.vote_average }}</p> <!--movie divinin içinde çünkü overview ü absolute olarak imagenin üstünde göstermek istiyoruz -->

@@ -2,7 +2,7 @@ import { useAxios } from "~/composable/useAxios";
 
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
-    const endpoint = query.endpoint?.toString() || "movie/now_playing";
+    const endpoint = "movie/now_playing"; // query.endpoint?.toString() || 
 
     const api = useAxios();
 

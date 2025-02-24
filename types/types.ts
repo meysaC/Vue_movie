@@ -27,3 +27,20 @@ export interface MovieResponse {
     total_pages: number;
     total_results: number;
 }
+
+export interface Result {
+    iso_630_1: string;
+    iso_3166_1: string;
+    name: string;
+    key: string;
+    site: string;
+    type: string;
+    official: boolean;
+    published_at: Dates;
+}
+
+export interface Root {
+    id: number;
+    results: Result[];
+
+}

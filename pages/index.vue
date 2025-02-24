@@ -40,14 +40,12 @@ useHead({
 
         <!-- Movies -->
         <div v-else class="container movies">
-
               <!-- Search Movie -->
             <div v-if="searchInput !== ''" id="movie-grid" class="movies-grid">
                 <MovieCard 
                   v-for="movie in searchResults?.results" 
                   :movie="movie"/>
             </div>
-
             <!-- Now Streaming -->
             <div v-else id="movie-grid" class="movies-grid">            
               <MovieCard 
@@ -55,7 +53,6 @@ useHead({
                 :movie="movie"/>                
             </div>
         </div>
-
     </div>
 </template>
 

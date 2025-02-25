@@ -58,13 +58,13 @@ if (useTrailer.value.videos && useTrailer.value.videos.results.length) {
             </div>
 
             <!--Movie Trailer-->
-            <div v-else="activeTab === 'trailer' " class="tariler-container flex flex-col mt-10">
+            <div v-else="activeTab === 'trailer' " class="tariler-container "> <!--flex flex-col mt-10  -->
                 <Youtube v-if="trailer" 
                   :src="`https://www.youtube.com/watch?v=${trailer.key}`" 
                   :video-id="trailer.key" 
-                  :width="800" 
+                  class="custom-iframe"/>  <!-- class="w-full h-[450px]"                  :width="800" 
                   :height="450" 
-                  class="w-full h-[450px]" />
+-->
                 <div v-else>Trailer not Found.</div>
             </div>       
             
@@ -102,6 +102,23 @@ if (useTrailer.value.videos && useTrailer.value.videos.results.length) {
     </div>
 </template>
 
+<style>
+.custom-iframe iframe {
+  width: 640px !important;
+  height: 360px !important;
+}
+
+/* Küçük ekranlar için */
+@media (max-width: 540px) {
+  .custom-iframe iframe {
+    width: 350px !important;
+    height: 360px !important;
+    display: flex;
+    margin: 0 auto;
+  }
+}
+
+</style>
 
 <style lang="scss" scoped>
 .single-movie {
@@ -145,6 +162,7 @@ if (useTrailer.value.videos && useTrailer.value.videos.results.length) {
     align-items: center;
     gap: 32px;
     color: #fff;
+    //justify-content: center;
    //width: 100%;
 
     //once it gets to min width of a 800 
@@ -153,40 +171,6 @@ if (useTrailer.value.videos && useTrailer.value.videos.results.length) {
       align-items: flex-start; //
     }
     
-    .trailer-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-      height: auto;
-      
-      iframe {
-        // width: 100%;
-        // max-width: 800px; //100%
-        // height: auto;
-        // aspect-ratio: 16 / 9; // Responsive video için Oranlı küçülmesini sağlar
-        
-        max-height: 500px;        
-        max-width: 100%;
-      }
-
-      @media (min-width: 800px) {
-        iframe {
-          // display: grid;
-          // flex-direction: row;
-          // align-items: flex-start; //
-          // justify-content: center;
-
-          max-height: 700px;
-          width: initial;
-
-           //max-width: 800px;
-           //height: auto;
-        }
-      }
-
-    }
-
     .movie-img {
       display: flex;
       justify-content: center;

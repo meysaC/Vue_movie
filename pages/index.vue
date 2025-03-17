@@ -21,14 +21,14 @@ useHead({
 
 <template>
     <div class="home">
-        <!-- Hero -->
-        <Hero/>
+        <Navbar/>
+        <!--<Hero/>  mt-[60px] -->
 
         <!-- Search -->
-        <div class="container search">
+        <div class="container search ">
             <!-- v-model ->>> we wanna hook up a data value to this input to capture the user's search term  -->
             <!-- v-model.lazy->instead of updating on each keystroke its gonna update when te user enters and leaves the actual input itself-->
-            <input 
+            <input
             @key.enter=""   
             v-model="searchInput" 
             type="text"

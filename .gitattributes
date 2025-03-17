@@ -1,0 +1,32 @@
+# Text files - LF satır sonları kullan
+* text=auto eol=lf
+
+# Nuxt ve diğer node.js dosyaları için
+*.js    text
+*.ts    text
+*.json  text
+*.css   text
+*.html  text
+
+# Yalnızca ikili dosyalar için, satır sonu değiştirilmez
+*.jpg   binary
+*.jpeg  binary
+*.png   binary
+*.gif   binary
+*.ico   binary
+*.pem   binary
+*.key   binary
+
+# Windows'a özgü dosyalar için
+*.log   text eol=lf
+
+# .env dosyalarına özel
+.env    text eol=lf
+
+# İlgili metadata dosyaları
+.DS_Store binary
+.idea/* binary
+
+# Git'in dosya tipini doğru anlamasını sağlamak
+*.sh   text eol=lf
+

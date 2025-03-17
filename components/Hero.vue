@@ -1,9 +1,16 @@
 <script setup lang="ts">
-        
+    import { useAuthStore } from '~/store/auth'
+    const authStore = useAuthStore();
+
+
 </script>
 
 
 <template>
+    <!--<div v-if="authStore.token === null">    </div>-->
+    <!-- <NuxtLink to="/user/login">Giriş Yap</NuxtLink> |
+    <NuxtLink to="/user/register">Kayıt Ol</NuxtLink> | -->
+
     <div class="hero">
         <img src="../assets/imgs/movieHero.jpg" alt=""/>
         <div class="text-container">

@@ -17,7 +17,7 @@ const submitRegister = async () => {
 <template>
   <div class="register-container">
     <form @submit.prevent="submitRegister">
-      <input v-model="authStore.registrationForm.username" placeholder="Kullanıcı Adı" required />
+      <input v-model="authStore.registrationForm.userName" placeholder="Kullanıcı Adı" required />
       <input v-model="authStore.registrationForm.email" type="email" placeholder="Email" required />
       <input v-model="authStore.registrationForm.password" type="password" placeholder="Şifre" required />
       <button type="submit" :disabled="loading">

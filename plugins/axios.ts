@@ -61,7 +61,7 @@ export default defineNuxtPlugin(() => {
             });
         }
         else {
-            console.error("Response error:", error);
+            console.error("Response error:", error.response?.data || error.message || error);
         }
         return Promise.reject(new Error(error.response?.data || "Service error"));
     }

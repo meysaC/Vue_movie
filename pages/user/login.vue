@@ -3,6 +3,8 @@ import { ref } from 'vue'
 import { useAuthStore } from '~/store/auth'
 import { useRouter } from 'vue-router'
 
+const showLoginModal = ref(false);
+
 const authStore = useAuthStore()
 const loading = ref(false);
 const router = useRouter();
@@ -13,6 +15,10 @@ const submitLogin = async () => {
   loading.value = false;
 };
 
+const googleLogin = () => {
+  authStore.googleLogin();
+};
+
 watch(() => authStore.token, (newToken) => {
   if (newToken !== null) {
     setTimeout(() => {
@@ -20,11 +26,12 @@ watch(() => authStore.token, (newToken) => {
     }, 1000) // 1 saniye bekleme
   }
 })
+//movie3333 Password_3333
 </script>
 
 
 <template>
-  <div class="register-container">
+  <!-- <div class="register-container">
     <form @submit.prevent="submitLogin">
       <input v-model="authStore.registrationForm.username" placeholder="Kullanıcı Adı" required />
       <input v-model="authStore.registrationForm.password" type="password" placeholder="Şifre" required />
@@ -35,7 +42,11 @@ watch(() => authStore.token, (newToken) => {
     <p v-if="authStore.dialog.show" :class="`dialog ${authStore.dialog.type}`">
       {{ authStore.dialog.message }}
     </p>
-  </div>
+    <button @click="googleLogin" class="google-login-btn">
+      Google ile Giriş Yap
+    </button>
+  </div> -->
+  google giriş
 </template>
 
 <style scoped>
@@ -69,5 +80,12 @@ button {
 .dialog.error {
   background-color: #f8d7da;
   color: #721c24;
+}
+.google-login-btn {
+  background-color: #4285f4;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
 }
 </style>

@@ -19,7 +19,7 @@ export default defineNuxtPlugin(() => {
   const axiosServices = axios.create(axiosConfig);
 
   axiosServices.interceptors.request.use(async function (config) {
-    const accessToken = useCookie('token', { secure: true }); //cookie güvenliği için secure: true ekleyerek sadece HTTPS üzerinde saklanmasını 
+  const accessToken = useCookie('token', { secure: true }); //cookie güvenliği için secure: true ekleyerek sadece HTTPS üzerinde saklanmasını 
 
     try {
       if (accessToken && accessToken.value) {

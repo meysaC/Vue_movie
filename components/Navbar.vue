@@ -7,11 +7,11 @@ const isMenuOpen = ref(false);
 const isProfileMenuOpen = ref(false)
 const showLoginModal = ref(false)
 
-const authStore = useAuthStore()
+  const authStore = useAuthStore()
 
-const isSignedin = computed(() => authStore.token !== null);
-const linkTo = computed(() => (isSignedin.value ? '/user/login' : '/user/register'));
-const linkText = computed(() => (isSignedin.value ? 'Hesabım' : 'Signin'));
+//const isSignedin = computed(() => authStore.token !== null);
+// const linkTo = computed(() => (isSignedin.value ? '/user/login' : '/user/register'));
+// const linkText = computed(() => (isSignedin.value ? 'Hesabım' : 'Signin'));
 
 const onToggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
@@ -21,34 +21,15 @@ const onToggleProfileMenu = () => {
   isProfileMenuOpen.value = !isProfileMenuOpen.value
 }
 
-//const googleLogin = () => authStore.googleLogin();
-const logout = () => {
+const logout = async () => {
   authStore.logout();
   isProfileMenuOpen.value = false
+  await navigateTo('/');
 }
 
-const user = computed(() => authStore.getUser); 
-// onMounted(() => {
-//   authStore.fetchUser()
-// })
-// export default {
-//   directives: {
-//     clickOutside: {
-//       mounted(el, binding) {
-//         el.clickOutsideEvent = (event) => {
-//           if (!(el == event.target || el.contains(event.target))) {
-//             binding.value(event);
-//           }
-//         };
-//         document.addEventListener("click", el.clickOutsideEvent);
-//       },
-//       unmounted(el) {
-//         document.removeEventListener("click", el.clickOutsideEvent);
-//       },
-//     }
-//   }
-// }
+// onMounted (async () => {
 
+// })
 </script>
 
  
@@ -58,7 +39,7 @@ const user = computed(() => authStore.getUser);
         <nav class="flex justify-between items-center w-[92%] mx-auto transition-all duration-500"
           :class="isMenuOpen ? 'pb-64' : 'pb-0'"  > <!--pb değil mb olcak!!!  flex(yan yana gelir) justify-between(aralarında boşluk olur) items-center(y düzleminde ortalı kalır), w-[92%]->nav width tüm widthin 92 sini kaplar, mx-auto(hepsi center lı) -->
             <div>
-                <img class="w-14 " src="/assets/imgs/MoviePx_logo.png">
+                <img class="w-14 " src="/public/MoviePx_logo.png">
             </div>
             
             <!--md:static(buton ve iconla yan yana olucak listeler yoksa biri yukarda biri aşağıda oluyo)-->
@@ -72,16 +53,13 @@ const user = computed(() => authStore.getUser);
                 <li>
                   <NuxtLink to="/" class="text-white hover:text-gray-500">Listeler</NuxtLink>
                 </li>
-                <li v-if="authStore.isAuthenticated" @click.outside class="relative text-white">
-                  <img @click="onToggleProfileMenu"  src="/assets/imgs/AccountIcon.svg" class="w-8 h-8 cursor-pointer "  alt="profil"/>
+                <li v-if="authStore?.isAuthenticated" @click.outside class="relative text-white">
+                  <img @click="onToggleProfileMenu"  src="/assets/imgs/AccountIcon.svg" class="w-8 h-8 cursor-pointer"  alt="profil"/>
                   <!--Açılır Profil Menü -->
-                  <div v-if="isProfileMenuOpen"  class="absolute rigth-0 mt-2 w-40 bg-white shadow-lg z-50 mb-[1000px]">
+                  <div v-if="isProfileMenuOpen" class="absolute right-0 mt-2 w-40 bg-white shadow-lg z-50">
                     <ul class="py-2 text-sm">
-                     <!-- <li class="py-2 px-4">
-                        <NuxtLink to="/profile" class="text-black">Hoş geldin {{ authStore.registrationForm?.username }} !</NuxtLink>
-                      </li>-->
-                      <li class="py-2 px-4">
-                        <NuxtLink to="/profile" class="text-black">Profil</NuxtLink>
+                      <li v-if="authStore?.user?.id" class="py-2 px-4">
+                        <NuxtLink :to="`/user/${authStore?.user?.id}`" class="text-black">Profil</NuxtLink>  
                       </li>
                       <li class="py-2 px-4 hover:bg-gray-100">
                         <button @click="logout" class="button button-light text-black hover:text-white">Çıkış Yap</button> 
@@ -90,7 +68,6 @@ const user = computed(() => authStore.getUser);
                   </div>                                 
                 </li>
                 <li v-else>
-                  <!-- <NuxtLink to="/user/login">Giriş Yap</NuxtLink> -->
                   <button @click="showLoginModal = true" class="button button-light">Giriş Yap</button>                
                 </li>
               </ul>

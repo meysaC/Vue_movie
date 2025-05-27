@@ -11,8 +11,12 @@ export default defineNuxtConfig({
     https: {
       // key: 'ssl/localhost-key.pem', 
       // cert: 'ssl/localhost-cert.pem'
-      key: fs.readFileSync(path.resolve(__dirname, 'ssl/localhost-key.pem'), 'utf8'),  // sertifika dosyalarını fs.readFileSync() ile okuyorsun ama bu fonksiyon Buffer döndürür. Fakat Nuxt'un devServer.https konfigürasyonu string bekliyor (yani dosya içeriğini doğrudan değil, dosya yolunu vermeni istiyor)
-      cert: fs.readFileSync(path.resolve(__dirname, 'ssl/localhost-cert.pem'), 'utf8') //YANİ 'utf8'  ile string dönüşü garanti edilir ve s.startsWith hatası engellenmiş olur.
+
+      // key: fs.readFileSync(path.resolve(__dirname, 'ssl/localhost-key.pem'), 'utf8'),  // sertifika dosyalarını fs.readFileSync() ile okuyorsun ama bu fonksiyon Buffer döndürür. Fakat Nuxt'un devServer.https konfigürasyonu string bekliyor (yani dosya içeriğini doğrudan değil, dosya yolunu vermeni istiyor)
+      // cert: fs.readFileSync(path.resolve(__dirname, 'ssl/localhost-cert.pem'), 'utf8') //YANİ 'utf8'  ile string dönüşü garanti edilir ve s.startsWith hatası engellenmiş olur.
+
+      key: fs.readFileSync(path.resolve(__dirname, 'ssl/localhost-key.pem'), 'utf8'),
+      cert: fs.readFileSync(path.resolve(__dirname, 'ssl/localhost.pem'), 'utf8')
     }
   },
 

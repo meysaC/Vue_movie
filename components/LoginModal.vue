@@ -21,7 +21,7 @@ const googleLogin = () => {
 };
 
 const close = () => {
-    emit('close')
+  emit('close')
 }
 
 watch(() => authStore.token, (newToken) => {

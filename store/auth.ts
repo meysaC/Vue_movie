@@ -1,5 +1,8 @@
 import { defineStore } from 'pinia'
 import { useCookie } from '#app'
+import type { SimpleUser, User } from '~/types/user'
+import { useUserStore } from './user';
+
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -9,6 +12,8 @@ export const useAuthStore = defineStore('auth', {
       email: "",
       password: ""
     },
+    user: null as User | null,
+    //simpleUser: null as SimpleUser | null,
     token: useCookie("token").value || null, //benim token 
     stateToken: useCookie("stateToken").value || null, //google login için gerekli state token 
     dialog: {
@@ -20,9 +25,9 @@ export const useAuthStore = defineStore('auth', {
   }),
 
   getters: {
-    getRegistrationForm(state) {
-      return state.registrationForm;
-    },
+    // getRegistrationForm(state) {
+    //   return state.registrationForm;
+    // },
     getToken(state) {
       return state.token;
     },
@@ -30,39 +35,33 @@ export const useAuthStore = defineStore('auth', {
       return !!this.token;
     },
     getUser(state) {
-      return state.registrationForm;
-    }
+      return state.user;
+    },
+    // getSimpleUser(state) {
+    //   return state.simpleUser;
+    // }
   },
 
   actions: {
-    async fetchUser() {
-      try {
-        const { $myAxios } = useNuxtApp();
-        const response = await $myAxios.get("/user/me");
-        if(response.data) {
-          this.registrationForm = {
-            id: response.data.id,
-            userName: response.data.userName,
-            email: response.data.email,
-            password: response.data.password ?? ""
-          };
-        }
-      } catch (error) {
-        console.error("setUser error", error);
-        this.dialog = {
-          show: true,
-          type: "error",
-          message: "Kullanıcı bilgileri çekilirken hata oluştu."
-        };
-      }
-    },
     async register() {
       try {
         const { $myAxios } = useNuxtApp();
         const response = await $myAxios.post(`/account/register`, this.registrationForm);
-        if(response.data && response.data.token) {
-          await this.setUser(response);
-          await this.setToken(response.data.token);
+        if(response?.data?.token) {
+          //await this.setUser(response);
+          const token = response.data.token;
+          await this.setToken(token);
+          const id = await this.getUserIdFromToken(token);
+          //const tokenUserId = tokenUser?.sub;
+          if(id !== null) {
+            const userStore = useUserStore();
+            const fetchedUser = await userStore.fetchUser(id);
+            if (fetchedUser) {
+              this.user = userStore.user;//fetchedUser; //direk userStore.user dan almak daha iyi
+              console.log("auth store setlenen user", this.user);
+            }          
+          }
+
           this.dialog = {
             show: true,
             type: "success",
@@ -80,15 +79,27 @@ export const useAuthStore = defineStore('auth', {
         };
       }
     },
-    
     async login () {
       try {
         const { $myAxios } = useNuxtApp();
         const response = await $myAxios.post(`/account/login`, this.registrationForm);
-        if(response.data && response.data?.token) {
-          await this.setUser(response);
+        if(response?.data?.token) {
+          const token = response.data.token;
           await this.setToken(response.data.token);
+          //await this.setUser(response);
           
+          //token ı decode et kullanıcı bilgilerini al
+          const id = await this.getUserIdFromToken(token);
+          //const tokenUserId = tokenUser?.sub;
+          if(id !== null) {
+            const userStore = useUserStore();
+            const fetchedUser = await userStore.fetchUser(id);
+            if (fetchedUser) {
+              this.user = userStore.user;//fetchedUser; //direk userStore.user dan almak daha iyi
+              console.log("auth store setlenen user", this.user);
+            }          
+          }
+
           this.dialog = {
             show: true,
             type: "success",
@@ -107,7 +118,6 @@ export const useAuthStore = defineStore('auth', {
         };
       }
     },
-
     //backend’den google giriş url + stateToken(cookie ye yazılır) si alınır ve kullanıcı url ye yönlendirilir
     async googleLogin() {
       try {
@@ -132,14 +142,11 @@ export const useAuthStore = defineStore('auth', {
         };
       };
     },
-
     //backend’den gelen googleLogin de kaydedilmiş olan state tokenı query den gelen state token ile eşleşiyor mu kont. eder, 
     // queryden gelen code u backend e iletir --->>> response olarak kullanıcı bilgilerini alıp store a kaydeder.
     async googleCallback(code: string, stateFromQuery: string) {
       const storedState = useCookie("stateToken").value;
-        if (!code || !stateFromQuery) {
-          console.error("Code or state missing in callback");
-        } else if (stateFromQuery !== storedState) {
+      if (stateFromQuery !== storedState) {
           throw new Error("The oauth state was missing or invalid. google-callback");
         } else {
           try {
@@ -148,9 +155,18 @@ export const useAuthStore = defineStore('auth', {
               params: { code, state: stateFromQuery },
             });
 
-            if (response.data && response.data?.token) {
-              await this.setToken(response.data.token);
-              await this.setUser(response.data);
+            if (response.data?.token) {
+              const token = response.data.token;
+              await this.setToken(token);
+              const id = await this.getUserIdFromToken();
+              if(id !== null) {
+                const userStore = useUserStore()
+                const fetchedUser = await userStore.fetchUser(id);
+                if(fetchedUser) {
+                  this.user = userStore.user;
+                }
+              }
+              
               this.dialog = {
                 show: true,
                 type: "success",
@@ -166,23 +182,53 @@ export const useAuthStore = defineStore('auth', {
               type: "error",
               message: "Google ile giriş sırasında hata oluştu."
             };
-          }
-          finally {
-            const tokenCookie = useCookie("stateToken");
-            tokenCookie.value = null;
-            this.stateToken = null;
-          }
+            } finally {
+              const tokenCookie = useCookie("stateToken");
+              tokenCookie.value = null;
+              this.stateToken = null;
+            }
         }
     },
+    //async old için dönüş tipi  olmalı Promise<string | null>
+    async getUserIdFromToken(tokenArg?: string):Promise<string | null>  {
+      const token = tokenArg || useCookie('token').value; //gönderilen token dan ya da önceki kayıtlı token ı al
+      if (!token) return null;
 
+      try {
+        const base64Payload = token.split('.')[1];
+        const payload = JSON.parse(atob(base64Payload));
+        console.log("getUserIdFromToken auth store", payload)
+        return payload.sub || null;
+      } catch (e) {
+        console.error("Token parsing failed", e);
+        return null;
+      }
+    },
+    async init() {
+      //token varsa ama user yoksa
+      if(this.token && !this.user ) {
+        const id = await this.getUserIdFromToken(this.token)
+        if(id) {
+          const userStore = useUserStore();
+          const fetchedUser = await userStore.fetchUser(id);
+          if(fetchedUser) {
+            this.user = userStore.user;
+            console.log("auth store init setlenen user", this.user)
+          }
+        }
+      }
+    },
     async setUser(response: any){
-      this.registrationForm = {
-        id: response.data.id,
-        userName: response.data.userName || "",
-        email: response.data.email || "",
-        password: ""
-      };
-      console.log("set user veri:",this.registrationForm);
+      // const { id, userName, email } = response.data;
+      // this.simpleUser = {id, userName, email } as SimpleUser;
+      // console.log("auth store set Simpleuser", this.simpleUser);
+      this.user = response; //????????
+    },
+    async setToken(token: string) {
+      this.token = token;
+      const tokenCookie = useCookie("token", { maxAge: 60 * 60 * 24 * 1 }); // 1 gün boyunca saklanır
+      tokenCookie.value = token;
+      //useCookie("token").value = token;
     },
     clearUser() {
       this.registrationForm = {
@@ -191,12 +237,8 @@ export const useAuthStore = defineStore('auth', {
         email: "",
         password: ""
       };
-    },
-    async setToken(token: string) {
-      this.token = token;
-      const tokenCookie = useCookie("token", { maxAge: 60 * 60 * 24 * 1 }); // 1 gün boyunca saklanır
-      tokenCookie.value = token;
-      //useCookie("token").value = token;
+      this.user = null;
+      //this.simpleUser = null;
     },
     clearToken() {
       // useCookie("token").value = null;

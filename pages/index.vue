@@ -3,9 +3,22 @@ import { Loading } from "#components";
 import MovieCard from "~/components/MovieCard.vue";
 import { useNowMovies } from "~/composable/useNowMovies";
 import { useSearchMovie } from "~/composable/useSearchMovie";
-const { data,  error } = await useNowMovies(); // Şu an oynayan filmler pending,
+import { useUserStore } from "~/store/user";
+
 const searchInput = ref(""); //kullanıcı arama metni
+
+const { data,  error } = await useNowMovies(); // Şu an oynayan filmler pending,
 const { data: searchResults } = await useSearchMovie(searchInput); // Arama sonuçları , refresh
+
+
+const userStore = useUserStore()
+const userIdInput = ref("");
+function onFetch() {
+  const id = userIdInput.value.trim()
+  userStore.fetchUser(id)
+}
+
+
 useHead({
       title: 'Movie App - Latest Streaming Movie Info',
       meta: [
@@ -29,12 +42,22 @@ useHead({
             <!-- v-model ->>> we wanna hook up a data value to this input to capture the user's search term  -->
             <!-- v-model.lazy->instead of updating on each keystroke its gonna update when te user enters and leaves the actual input itself-->
             <input
-            @key.enter=""   
-            v-model="searchInput" 
-            type="text"
-            placeholder="Search" /> 
+              @key.enter=""   
+              v-model="searchInput" 
+              type="text"
+              placeholder="Search" /> 
             <button v-show="searchInput !== ''"  @click="searchInput = ''" class="button">Clear Search</button> <!-- v-show -> we wanna show this button if something was in the input -->
-        </div>
+        
+            <!-- Kullanıcı ID ile arama -->
+            <input
+              v-model="userIdInput"
+              @keyup.enter="onFetch"
+              type="text"
+              placeholder="Kullanıcı ID girin"
+              class="ml-2"
+            />
+            <button @click="onFetch" class="button ml-1">Kullanıcı Bul</button>
+          </div>
 
         <Loading v-if="searchResults?.status === 'pending'"/>
 

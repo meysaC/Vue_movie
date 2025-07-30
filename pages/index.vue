@@ -10,14 +10,12 @@ const searchInput = ref(""); //kullanıcı arama metni
 const { data,  error } = await useNowMovies(); // Şu an oynayan filmler pending,
 const { data: searchResults } = await useSearchMovie(searchInput); // Arama sonuçları , refresh
 
-
-const userStore = useUserStore()
 const userIdInput = ref("");
+const router = useRouter()
 function onFetch() {
   const id = userIdInput.value.trim()
-  userStore.fetchUser(id)
+  router.push(`/user/${id}`)
 }
-
 
 useHead({
       title: 'Movie App - Latest Streaming Movie Info',
@@ -26,16 +24,13 @@ useHead({
        {hid: 'description' ,name: 'description', content: 'My amazing site.' }
       ]
 });
-// useSeoMeta({
-//   title: "Movie App - Latest Streaming Movie Info",
-// });
 </script>
 
 
 <template>
     <div class="home">
         <Navbar/>
-        <!--<Hero/>  mt-[60px] -->
+         <!--<Hero/>  mt-[60px] -->
 
         <!-- Search -->
         <div class="container search ">
@@ -48,7 +43,7 @@ useHead({
               placeholder="Search" /> 
             <button v-show="searchInput !== ''"  @click="searchInput = ''" class="button">Clear Search</button> <!-- v-show -> we wanna show this button if something was in the input -->
         
-            <!-- Kullanıcı ID ile arama -->
+            <!-- Kullanıcı ID ile arama 
             <input
               v-model="userIdInput"
               @keyup.enter="onFetch"
@@ -56,7 +51,7 @@ useHead({
               placeholder="Kullanıcı ID girin"
               class="ml-2"
             />
-            <button @click="onFetch" class="button ml-1">Kullanıcı Bul</button>
+            <button @click="onFetch" class="button ml-1">Kullanıcı Bul</button>-->
           </div>
 
         <Loading v-if="searchResults?.status === 'pending'"/>

@@ -1,67 +1,117 @@
 <script setup>
-import { useAuthStore } from '~/store/auth'
 import Navbar from '~/components/Navbar.vue'
+import { useRoute } from 'vue-router'
 import { useUserStore } from '~/store/user'
-import { useRoute } from 'vue-router';
+import Watched from '~/components/profile/WatchedTab'
+import  Favorites  from '~/components/profile/FavoritesTab'
+import { ref, computed, onMounted } from 'vue'
 
-// definePageMeta({
-//   middleware: 'auth'
-// })
-
+const route = useRoute()
 const userStore = useUserStore()
-const authStore = useAuthStore()
-const route = useRoute();
 
-onMounted(async () => {
-  let routeId = route.params.id;
-  let userId = routeId
-  //console.log("id from route [id].vue", id)
+const activeTab = ref('favorites')
+const tabComponents = {
+  watched: Watched,
+  favorites: Favorites//defineAsyncComponent(() => import('~/components/profile/FavoritesTab'))
+  // watchlist: Watchlist,
+}
+const tabs = [
+  { key: 'watched', label: 'Watched' },
+  { key: 'favorites', label: 'Favorites' }
+  // { key: 'watchList', label: 'Watch List' },
+]
 
-  if(!userId) {
-    userId = authStore.getUserIdFromToken();
-    console.log("[id] userIdFromToken", userIdFromToken);
-  }
-
-  if (userId) {
-    await userStore.fetchUser(userId);
-  }
-
-  // if (!id && authStore.simpleUser && authStore.simpleUser.id) {
-  //   id = authStore.simpleUser.id;
-  //   console.log("Fallback ID kullanıldı:", id);
-  // }
-
-  // if (!id) {
-  //   console.error("Kullanıcı ID'si bulunamadı");
-  //   return;
-  // }
-  // await userStore.fetchUser(id);
+const userId = computed(() => {
+  return route.params.id || userStore.getUserIdFromToken();
 });
+onMounted(async () => {
+  // let routeId = route.params.id;
+  // let userId = routeId
+  // //console.log("id from route [id].vue", id)
 
+  // if(!userId) {
+  //   userId = userStore.getUserIdFromToken();
+  //   console.log("[id] userIdFromToken", userId);
+  // }
+  // if (userId) {
+  const user = await userStore.fetchUser(userId.value);
+  //}
+});
 </script>
 
 <template>
   <Navbar />
-    <NuxtLink class="button" >Back</NuxtLink> <!-- :to="{ name: 'index'}" -->
-    <div v-if="userStore.user" class="p-8">
-      <h1 class="text-3xl font-bold mb-6 text-white my-8">
-        {{ userStore.user.userName }}'in Profili
-      </h1>
+  <div class="max-w-6xl mx-auto p-4">
+    <!-- Banner -->
+    <div class="h-40 md:h-64 w-full bg-cover bg-center shadow" :style="{ backgroundImage: 'url(/565053.jpg)' }"></div>
 
-    <section class="mb-8">
-      <h2 class="text-2xl font-semibold mb-4 text-white">İzledikleri</h2>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <p class="text-white">girdin</p>
+    <!-- Profil Bilgisi -->
+    <div class="relative mt-12 md:-mt-20 flex items-center space-x-4 px-4">
+      <div class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white shadow bg-gray-300 flex items-center justify-center text-3xl text-white font-bold">
+        <!-- {{ userInitial }} -->
       </div>
-    </section>
+      <div>
+        <h1 class="text-xl font-semibold bg-white rounded-md">{{ userStore.user.userName }}</h1> <!--{{ user?.userName }}-->
+        <div class="flex items-center text-sm text-gray-500 space-x-2">
+          <span></span> <!--{{ user.gender }}  {{ user.yearsActive }}-->
+          <span>•</span>
+          <span> yıldır üye</span>
+        </div>
+      </div>
+      <div class="ml-auto flex space-x-4">
+        <div class="text-center">
+          <div class="text-lg font-semibold"></div><!--{{ user.following }}-->
+          <div class="text-sm text-gray-500">Followings</div>
+        </div>
+        <div class="text-center">
+          <div class="text-lg font-semibold"></div> <!--{{ user.followers }}-->
+          <div class="text-sm text-gray-500">Followers</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sayı Özetleri 
+    <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+      <div v-for="(value, key) in summary" :key="key" class="bg-gray-100 p-4 rounded shadow">
+        <div class="text-2xl font-bold">{{ value }}</div>
+        <div class="text-sm text-gray-600">{{ summaryTitles[key] }}</div>
+      </div>
+    </div>-->
+
+
+    <!-- Tab Navigation -->
+    <div class="mt-8 border-b border-gray-200">
+      <nav class="flex space-x-4">
+        <button
+          v-for="tab in tabs"
+          :key="tab.key"
+          @click="activeTab = tab.key"
+          class="py-2 px-4 text-sm font-medium border-b-2"
+          :class="activeTab === tab.key
+            ? 'border-black text-black'
+            : 'border-transparent text-gray-500 hover:text-black hover:border-gray-300'"
+        >
+          {{ tab.label }}
+        </button>
+      </nav>
+    </div>
+
+    <!-- Dinamik İçerik -->
+    <div class="flex-1 overflow-y-auto p-6 ">
+      <component
+       v-if="tabComponents[activeTab]"
+       :is="tabComponents[activeTab]" 
+       :userId="userId"
+      />
+    </div>
+
   </div>
-  <div v-else class="text-white p-8">
-    Kullanıcı bulunamadı.
-  </div>
+  
 </template>
 
 <style lang="scss" scoped>
   .button {
     align-self: flex-start;
     margin-bottom: 32px;
-  }</style>
+  }
+</style>

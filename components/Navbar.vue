@@ -7,11 +7,7 @@ const isMenuOpen = ref(false);
 const isProfileMenuOpen = ref(false)
 const showLoginModal = ref(false)
 
-  const authStore = useAuthStore()
-
-//const isSignedin = computed(() => authStore.token !== null);
-// const linkTo = computed(() => (isSignedin.value ? '/user/login' : '/user/register'));
-// const linkText = computed(() => (isSignedin.value ? 'Hesabım' : 'Signin'));
+const authStore = useAuthStore()
 
 const onToggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
@@ -26,10 +22,6 @@ const logout = async () => {
   isProfileMenuOpen.value = false
   await navigateTo('/');
 }
-
-// onMounted (async () => {
-
-// })
 </script>
 
  
@@ -54,18 +46,12 @@ const logout = async () => {
                   <NuxtLink to="/" class="text-white hover:text-gray-500">Listeler</NuxtLink>
                 </li>
                 <li v-if="authStore?.isAuthenticated" @click.outside class="relative text-white">
-                  <img @click="onToggleProfileMenu"  src="/assets/imgs/AccountIcon.svg" class="w-8 h-8 cursor-pointer"  alt="profil"/>
-                  <!--Açılır Profil Menü -->
-                  <div v-if="isProfileMenuOpen" class="absolute right-0 mt-2 w-40 bg-white shadow-lg z-50">
-                    <ul class="py-2 text-sm">
-                      <li v-if="authStore?.user?.id" class="py-2 px-4">
-                        <NuxtLink :to="`/user/${authStore?.user?.id}`" class="text-black">Profil</NuxtLink>  
-                      </li>
-                      <li class="py-2 px-4 hover:bg-gray-100">
-                        <button @click="logout" class="button button-light text-black hover:text-white">Çıkış Yap</button> 
-                      </li>
-                    </ul>
-                  </div>                                 
+                  <NuxtLink :to="`/user/${authStore?.user?.id}`">
+                    <img @click="onToggleProfileMenu"  src="/assets/imgs/AccountIcon.svg" class="w-8 h-8 cursor-pointer" alt="profil"/>
+                  </NuxtLink>                  
+                </li>
+                <li v-if="authStore?.isAuthenticated" >
+                  <button @click="logout" class="button button-light">Çıkış Yap</button> 
                 </li>
                 <li v-else>
                   <button @click="showLoginModal = true" class="button button-light">Giriş Yap</button>                

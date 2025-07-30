@@ -7,7 +7,7 @@ const props = defineProps<({
     movie: {
         id: number;
         title: string;
-        poster_path: string;
+        poster_path: string; //poster_path
         tagline: string;
         release_date: string;
         runtime: number;
@@ -17,7 +17,7 @@ const props = defineProps<({
 })>();
 
 const trailer = await ref<{ key: string; name: string } | null>(null);
-const play = ref(false);
+//const play = ref(false);
 const activeTab = ref('poster');
 
 const {data: useTrailer} = await useTrailerMovie(props.movie.id);
@@ -62,9 +62,7 @@ if (useTrailer.value.videos && useTrailer.value.videos.results.length) {
                 <Youtube v-if="trailer" 
                   :src="`https://www.youtube.com/watch?v=${trailer.key}`" 
                   :video-id="trailer.key" 
-                  class="custom-iframe"/>  <!-- class="w-full h-[450px]"                  :width="800" 
-                  :height="450" 
--->
+                  class="custom-iframe"/>  <!-- class="w-full h-[450px]" :width="800" :height="450"-->
                 <div v-else>Trailer not Found.</div>
             </div>       
             

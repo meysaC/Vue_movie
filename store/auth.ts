@@ -58,7 +58,6 @@ export const useAuthStore = defineStore('auth', {
             const fetchedUser = await userStore.fetchUser(id);
             if (fetchedUser) {
               this.user = userStore.user;//fetchedUser; //direk userStore.user dan almak daha iyi
-              console.log("auth store setlenen user", this.user);
             }          
           }
 
@@ -96,7 +95,6 @@ export const useAuthStore = defineStore('auth', {
             const fetchedUser = await userStore.fetchUser(id);
             if (fetchedUser) {
               this.user = userStore.user;//fetchedUser; //direk userStore.user dan almak daha iyi
-              console.log("auth store setlenen user", this.user);
             }          
           }
 
@@ -197,7 +195,6 @@ export const useAuthStore = defineStore('auth', {
       try {
         const base64Payload = token.split('.')[1];
         const payload = JSON.parse(atob(base64Payload));
-        console.log("getUserIdFromToken auth store", payload)
         return payload.sub || null;
       } catch (e) {
         console.error("Token parsing failed", e);
@@ -213,7 +210,6 @@ export const useAuthStore = defineStore('auth', {
           const fetchedUser = await userStore.fetchUser(id);
           if(fetchedUser) {
             this.user = userStore.user;
-            console.log("auth store init setlenen user", this.user)
           }
         }
       }

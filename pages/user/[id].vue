@@ -2,8 +2,8 @@
 import Navbar from '~/components/Navbar.vue'
 import { useRoute } from 'vue-router'
 import { useUserStore } from '~/store/user'
-import Watched from '~/components/profile/WatchedTab'
-import  Favorites  from '~/components/profile/FavoritesTab'
+import Watched from '~/components/Profile/WatchedTab'
+import  Favorites  from '~/components/Profile/FavoritesTab'
 import { ref, computed, onMounted } from 'vue'
 
 const route = useRoute()

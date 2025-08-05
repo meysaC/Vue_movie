@@ -4,15 +4,20 @@ import { useRoute } from 'vue-router'
 import { useUserStore } from '~/store/user'
 import Watched from '~/components/Profile/WatchedTab'
 import  Favorites  from '~/components/Profile/FavoritesTab'
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch  } from 'vue'
+import { useAuthStore } from '~/store/auth'
 
 const route = useRoute()
 const userStore = useUserStore()
+const authStore = useAuthStore()
 
-const activeTab = ref('favorites')
+// const routeUserId = route.params.id; 
+
+
+const activeTab = ref('watched')
 const tabComponents = {
-  watched: Watched,
-  favorites: Favorites//defineAsyncComponent(() => import('~/components/profile/FavoritesTab'))
+  favorites: Favorites,
+  watched: Watched
   // watchlist: Watchlist,
 }
 const tabs = [
@@ -21,66 +26,118 @@ const tabs = [
   // { key: 'watchList', label: 'Watch List' },
 ]
 
+/** COMPUTED */
+//sadece reactive bağımlılıkları değişirse çalışır.İçinde reactive bir şey değişmezse tekrar çalışmaz.( otomatik cache’li getter gibi)
 const userId = computed(() => {
-  return route.params.id || userStore.getUserIdFromToken();
+  return authStore.getterUserIdFromToken //route.params.id || userStore.getUserIdFromToken()     userStore String(başka bir kullanıcı id si route ile, giriş yapmuş kullanıcı id auth jwt token üzerinden
 });
-onMounted(async () => {
-  // let routeId = route.params.id;
-  // let userId = routeId
-  // //console.log("id from route [id].vue", id)
+const routeUserId = computed(() => route.params.id)
 
-  // if(!userId) {
-  //   userId = userStore.getUserIdFromToken();
-  //   console.log("[id] userIdFromToken", userId);
-  // }
-  // if (userId) {
-  const user = await userStore.fetchUser(userId.value);
-  //}
-});
+const currentProfile = computed(() => userStore.getUser)
+const isFollowing = computed(() => userStore.isFollowing(userId.value)); //!!giriş yapan kullanıcı idsi, profilindeki kullanıcının followers içerisinde var ise kontrolü yapar!!
+const followings = computed(() =>userStore.getFollowings); 
+const followers = computed(() =>userStore.getFollowers);
+const followingsCount = computed(() => userStore.getFollowingCount); 
+const followersCount = computed(() =>userStore.getFollowerCount);
+
+
+
+/** FUNCTION */
+async function toggleFollow() {
+  try {
+    await userStore.toggleFollow(routeUserId); //userId.value 
+  } catch (error) {
+    console.error("Takip işlemi başarısız", error);
+  }
+}
+
+/** ONMOUNTED */
+// Sayfa açıldığında memory'yi doldur
+//sayfa her açıldığında güncellenir böylece computed otomatik güncellenir.
+// onMounted(async () => {
+//   await userStore.fetchUser(routeUserId.value); 
+//   await userStore.fetchFollowings(routeUserId.value)
+//   await userStore.fetchFollowers(routeUserId.value)
+//   console.log("userId",userId.value)
+//   console.log("routeUserId",routeUserId.value)
+// });
+
+
+onMounted(() => fetchProfile(route.params.id))
+
+watch(() => route.params.id, async (newId) => {
+  await fetchProfile(newId)
+})
+
+let lastFetchedId = null
+async function fetchProfile(id) {
+  if (!id) return; // id yoksa backende istek atma
+  if (!id || id === lastFetchedId) return lastFetchedId = id //aynı id ye gereksiz istek atılmasın
+
+  await userStore.fetchUser(id)
+  await userStore.fetchFollowings(id)
+  await userStore.fetchFollowers(id)
+}
+//İlk mount olduğunda veriyi çekiyor
+//Param değişince tekrar fetch yapıyor
+
+
+
+
+//onMounted (fetch) ilk açıldığında  bileşen dom a ilk eklendiğinde,     
+//computed (getter) ile çek değer değiştiğinde çalışır bir kaynaktan türeyen hesaplanmış bir değeri döndürür bu değeri cache’ler (önbellekler), sadece bağımlı olduğu reactive değer değişirse yeniden hesaplar!!
+//store da getter olan kullandığımızda zaten reaktif old. için computed falan gerek yok
+
+//7d45a22b-e6e3-42be-a536-2d50c3ccf73c  blackworld
+//4438c635-382b-467f-af56-fb3d6ee37743 movie3333
 </script>
 
 <template>
   <Navbar />
-  <div class="max-w-6xl mx-auto p-4">
-    <!-- Banner -->
-    <div class="h-40 md:h-64 w-full bg-cover bg-center shadow" :style="{ backgroundImage: 'url(/565053.jpg)' }"></div>
 
-    <!-- Profil Bilgisi -->
-    <div class="relative mt-12 md:-mt-20 flex items-center space-x-4 px-4">
-      <div class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white shadow bg-gray-300 flex items-center justify-center text-3xl text-white font-bold">
-        <!-- {{ userInitial }} -->
-      </div>
-      <div>
-        <h1 class="text-xl font-semibold bg-white rounded-md">{{ userStore.user.userName }}</h1> <!--{{ user?.userName }}-->
-        <div class="flex items-center text-sm text-gray-500 space-x-2">
-          <span></span> <!--{{ user.gender }}  {{ user.yearsActive }}-->
-          <span>•</span>
-          <span> yıldır üye</span>
-        </div>
-      </div>
-      <div class="ml-auto flex space-x-4">
-        <div class="text-center">
-          <div class="text-lg font-semibold"></div><!--{{ user.following }}-->
-          <div class="text-sm text-gray-500">Followings</div>
-        </div>
-        <div class="text-center">
-          <div class="text-lg font-semibold"></div> <!--{{ user.followers }}-->
-          <div class="text-sm text-gray-500">Followers</div>
+  <div class="w-full overflow-x-hidden max-w-screen pt-4">
+    
+    <!-- Banner -->
+    <div id="Banner">
+      <div class="w-full">
+        <div class="relative w-full h-[400px] sm:h-[500px] md:h-[600px]">
+            <!-- IMAGE -->
+            <div class="absolute inset-0">
+                <img src="/assets/imgs/movieHero.jpg" alt="shot" class="w-full h-full object-cover">
+            </div>
+
+            <!--Follow buton -->
+            <div class="relative felx flex-col justify-start p-4">
+              <div class="flex flex-row-reverse">
+                <button v-if="routeUserId !== userId" type="button" href="" class="button text-sm" 
+                 :class="isFollowing ? '' : 'bg-green-500 hover:bg-green-700'"
+                  @click="toggleFollow"
+                >{{ isFollowing ? "Unfollow" : "Follow" }}</button>
+              </div>
+            </div>
+
+            <div class="relative h-full flex flex-col justify-end z-20">
+              <div class="flex flex-col w-full mb-20 pb-6">
+                <div class="flex w-24 h-24 md:w-32 md:h-32 rounded-full bg-gray-200"></div>
+                <div class="flex justify-end bg-black/50 h-cover py-2 px-8">
+                  <p class="text-white pr-4">{{ currentProfile.userName }}</p>
+                  <div class="flex flex-col text-center text-white">
+                    <NuxtLink to="/" class="text-white hover:text-red-800 text-lg pr-4">Followings</NuxtLink>
+                    <p>{{ followingsCount }}</p>
+                  </div>
+                  <div class="flex flex-col text-center text-white">
+                    <NuxtLink to="/" class="text-white hover:text-red-800 text-lg">Followers</NuxtLink> 
+                    <p>{{ followersCount }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
         </div>
       </div>
     </div>
 
-    <!-- Sayı Özetleri 
-    <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-      <div v-for="(value, key) in summary" :key="key" class="bg-gray-100 p-4 rounded shadow">
-        <div class="text-2xl font-bold">{{ value }}</div>
-        <div class="text-sm text-gray-600">{{ summaryTitles[key] }}</div>
-      </div>
-    </div>-->
-
-
     <!-- Tab Navigation -->
-    <div class="mt-8 border-b border-gray-200">
+    <div class="mt-8 border-b border-gray-200 ml-6">
       <nav class="flex space-x-4">
         <button
           v-for="tab in tabs"
@@ -101,7 +158,7 @@ onMounted(async () => {
       <component
        v-if="tabComponents[activeTab]"
        :is="tabComponents[activeTab]" 
-       :userId="userId"
+       :userId="routeUserId"
       />
     </div>
 

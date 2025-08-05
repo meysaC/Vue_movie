@@ -74,6 +74,6 @@ onMounted(async () => {
 
 <template>
     <div>
-      <p>Google ile giriş yapılıyor, lütfen bekleyin...</p>
+      <p class="text-white">Google ile giriş yapılıyor, lütfen bekleyin...</p>
     </div>
   </template>

@@ -14,7 +14,6 @@ onMounted(async () => {
     const result = await userStore.fetchWatchedMovies(props.userId);
     if(result) {
       data.value = result.map(item => item.movie)
-      console.log("watched tab ", data.value)
     }
   } catch (error) {
     console.error("Error fetching watched movies in watched tab:", error);

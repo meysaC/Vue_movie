@@ -20,7 +20,6 @@ export default defineNuxtPlugin(() => {
 
   axiosServices.interceptors.request.use(async function (config) {
   const accessToken = useCookie('token', { secure: true }); //cookie güvenliği için secure: true ekleyerek sadece HTTPS üzerinde saklanmasını 
-
     try {
       if (accessToken && accessToken.value) {
         config.headers['Authorization'] = `Bearer ${accessToken.value}`;
@@ -33,6 +32,7 @@ export default defineNuxtPlugin(() => {
       //   return config;  
       // }
       config.headers['Accept'] = 'application/json';
+      
     } catch (error) {
       console.error("Error setting request headers:", error);
     }

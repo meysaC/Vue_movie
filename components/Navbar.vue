@@ -30,9 +30,9 @@ const logout = async () => {
     <div  class="only-tailwind bg-[#211f1f]">  <!-- font-[Poppins-Light]-->  
         <nav class="flex justify-between items-center w-[92%] mx-auto transition-all duration-500"
           :class="isMenuOpen ? 'pb-64' : 'pb-0'"  > <!--pb değil mb olcak!!!  flex(yan yana gelir) justify-between(aralarında boşluk olur) items-center(y düzleminde ortalı kalır), w-[92%]->nav width tüm widthin 92 sini kaplar, mx-auto(hepsi center lı) -->
-            <div>
-                <img class="w-14 " src="/public/MoviePx_logo.png">
-            </div>
+            <NuxtLink to="/">
+              <img class="w-14 " src="/public/MoviePx_logo.png">
+            </NuxtLink>
             
             <!--md:static(buton ve iconla yan yana olucak listeler yoksa biri yukarda biri aşağıda oluyo)-->
             <div 
@@ -54,7 +54,7 @@ const logout = async () => {
                   <button @click="logout" class="button button-light">Çıkış Yap</button> 
                 </li>
                 <li v-else>
-                  <button @click="showLoginModal = true" class="button button-light">Giriş Yap</button>                
+                  <button @click="showLoginModal = true" class="button">Giriş Yap</button>                
                 </li>
               </ul>
             </div>

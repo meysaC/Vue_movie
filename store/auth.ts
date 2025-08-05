@@ -37,12 +37,33 @@ export const useAuthStore = defineStore('auth', {
     getUser(state) {
       return state.user;
     },
+    getterUserIdFromToken(state) {
+      return state.user?.id
+    }
     // getSimpleUser(state) {
     //   return state.simpleUser;
     // }
   },
 
   actions: {
+    async fetchUser(id: string): Promise<User | null> {
+      try {
+        const { $myAxios } = useNuxtApp();
+        const {data: user } = await $myAxios.get<User>(`/user/get_user`, {
+          params: { id } 
+      });
+        this.user = user;
+        return user;
+      } catch (error) {
+        console.error("setUser error", error);
+        this.dialog = {
+          show: true,
+          type: "error",
+          message: "Kullanıcı bilgileri çekilirken hata oluştu."
+        };
+        return null;
+      }
+    },
     async register() {
       try {
         const { $myAxios } = useNuxtApp();
@@ -54,10 +75,10 @@ export const useAuthStore = defineStore('auth', {
           const id = await this.getUserIdFromToken(token);
           //const tokenUserId = tokenUser?.sub;
           if(id !== null) {
-            const userStore = useUserStore();
-            const fetchedUser = await userStore.fetchUser(id);
+            //const userStore = useUserStore();
+            const fetchedUser = await this.fetchUser(id);
             if (fetchedUser) {
-              this.user = userStore.user;//fetchedUser; //direk userStore.user dan almak daha iyi
+              this.user = fetchedUser;
             }          
           }
 
@@ -91,10 +112,11 @@ export const useAuthStore = defineStore('auth', {
           const id = await this.getUserIdFromToken(token);
           //const tokenUserId = tokenUser?.sub;
           if(id !== null) {
-            const userStore = useUserStore();
-            const fetchedUser = await userStore.fetchUser(id);
+            //const userStore = useUserStore();
+            const fetchedUser = await this.fetchUser(id);
             if (fetchedUser) {
-              this.user = userStore.user;//fetchedUser; //direk userStore.user dan almak daha iyi
+              this.user = fetchedUser;//; userStore.user direk userStore.user dan almak daha iyi
+              console.log("auth login",this.user)
             }          
           }
 
@@ -158,10 +180,10 @@ export const useAuthStore = defineStore('auth', {
               await this.setToken(token);
               const id = await this.getUserIdFromToken();
               if(id !== null) {
-                const userStore = useUserStore()
-                const fetchedUser = await userStore.fetchUser(id);
+                //const userStore = useUserStore()
+                const fetchedUser = await this.fetchUser(id);
                 if(fetchedUser) {
-                  this.user = userStore.user;
+                  this.user = fetchedUser;
                 }
               }
               
@@ -195,6 +217,7 @@ export const useAuthStore = defineStore('auth', {
       try {
         const base64Payload = token.split('.')[1];
         const payload = JSON.parse(atob(base64Payload));
+        console.log("getUserIdFromToken auth",payload.sub )
         return payload.sub || null;
       } catch (e) {
         console.error("Token parsing failed", e);

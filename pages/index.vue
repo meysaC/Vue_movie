@@ -43,7 +43,7 @@ useHead({
               placeholder="Search" /> 
             <button v-show="searchInput !== ''"  @click="searchInput = ''" class="button">Clear Search</button> <!-- v-show -> we wanna show this button if something was in the input -->
         
-            <!-- Kullanıcı ID ile arama 
+            <!-- Kullanıcı ID ile arama -->
             <input
               v-model="userIdInput"
               @keyup.enter="onFetch"
@@ -51,7 +51,7 @@ useHead({
               placeholder="Kullanıcı ID girin"
               class="ml-2"
             />
-            <button @click="onFetch" class="button ml-1">Kullanıcı Bul</button>-->
+            <button @click="onFetch" class="button ml-1">Kullanıcı Bul</button>
           </div>
 
         <Loading v-if="searchResults?.status === 'pending'"/>

@@ -13,7 +13,6 @@ const authStore = useAuthStore()
 
 // const routeUserId = route.params.id; 
 
-
 const activeTab = ref('watched')
 const tabComponents = {
   favorites: Favorites,
@@ -41,7 +40,6 @@ const followingsCount = computed(() => userStore.getFollowingCount);
 const followersCount = computed(() =>userStore.getFollowerCount);
 
 
-
 /** FUNCTION */
 async function toggleFollow() {
   try {
@@ -63,12 +61,12 @@ async function toggleFollow() {
 // });
 
 
+//İlk mount olduğunda veriyi çekiyor
+//Param değişince tekrar fetch yapıyor
 onMounted(() => fetchProfile(route.params.id))
-
 watch(() => route.params.id, async (newId) => {
   await fetchProfile(newId)
 })
-
 let lastFetchedId = null
 async function fetchProfile(id) {
   if (!id) return; // id yoksa backende istek atma
@@ -78,9 +76,6 @@ async function fetchProfile(id) {
   await userStore.fetchFollowings(id)
   await userStore.fetchFollowers(id)
 }
-//İlk mount olduğunda veriyi çekiyor
-//Param değişince tekrar fetch yapıyor
-
 
 
 
@@ -98,36 +93,41 @@ async function fetchProfile(id) {
   <div class="w-full overflow-x-hidden max-w-screen pt-4">
     
     <!-- Banner -->
-    <div id="Banner">
+    <div id="Banner" class="w-full">
       <div class="w-full">
         <div class="relative w-full h-[400px] sm:h-[500px] md:h-[600px]">
             <!-- IMAGE -->
             <div class="absolute inset-0">
-                <img src="/assets/imgs/movieHero.jpg" alt="shot" class="w-full h-full object-cover">
+                <img src="/assets/imgs/movieHero.jpg" alt="shot" class="absolute top-0 left-0 w-full h-full object-cover">
             </div>
 
             <!--Follow buton -->
-            <div class="relative felx flex-col justify-start p-4">
-              <div class="flex flex-row-reverse">
-                <button v-if="routeUserId !== userId" type="button" href="" class="button text-sm" 
-                 :class="isFollowing ? '' : 'bg-green-500 hover:bg-green-700'"
-                  @click="toggleFollow"
-                >{{ isFollowing ? "Unfollow" : "Follow" }}</button>
-              </div>
+            <div class="absolute top-4 right-4 z-30">
+              <button v-if="routeUserId !== userId" type="button" href="" class="button text-sm" 
+                :class="isFollowing ? '' : 'bg-green-500 hover:bg-green-700'"
+                @click="toggleFollow"
+              >{{ isFollowing ? "Unfollow" : "Follow" }}</button>
             </div>
 
-            <div class="relative h-full flex flex-col justify-end z-20">
-              <div class="flex flex-col w-full mb-20 pb-6">
-                <div class="flex w-24 h-24 md:w-32 md:h-32 rounded-full bg-gray-200"></div>
-                <div class="flex justify-end bg-black/50 h-cover py-2 px-8">
+            <!-- Information -->
+            <div class="absolute bottom-0 left-0 w-full z-20">
+              <div class="flex flex-col items-start">
+                <!-- Avatar -->
+                <div class="flex w-24 h-24 md:w-32 md:h-32 rounded-full bg-gray-200 ml-4"></div>
+                
+                <!-- Info Bar -->
+                <div class="flex justify-end bg-black/50  w-full py-2 px-8">
                   <p class="text-white pr-4">{{ currentProfile.userName }}</p>
-                  <div class="flex flex-col text-center text-white">
-                    <NuxtLink to="/" class="text-white hover:text-red-800 text-lg pr-4">Followings</NuxtLink>
-                    <p>{{ followingsCount }}</p>
-                  </div>
-                  <div class="flex flex-col text-center text-white">
-                    <NuxtLink to="/" class="text-white hover:text-red-800 text-lg">Followers</NuxtLink> 
-                    <p>{{ followersCount }}</p>
+                  <div class="justify-end">
+
+                    <div class="flex flex-col text-center text-white">
+                      <NuxtLink to="/" class="text-white hover:text-red-800 text-lg pr-4">Followings</NuxtLink>
+                      <p>{{ followingsCount }}</p>
+                    </div>
+                    <div class="flex flex-col text-center text-white  mr-4">
+                      <NuxtLink to="/" class="text-white hover:text-red-800 text-lg">Followers</NuxtLink> 
+                      <p>{{ followersCount }}</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -163,7 +163,6 @@ async function fetchProfile(id) {
     </div>
 
   </div>
-  
 </template>
 
 <style lang="scss" scoped>

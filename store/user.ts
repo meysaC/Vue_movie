@@ -85,11 +85,12 @@ export const useUserStore = defineStore('user', {
           }
         },
         async fetchFavoriteMovies(userId: string): Promise<Movie[] | null> { 
+          if(this.favorites[userId]) return this.favorites[userId]; //daha önce çekildiyse cachdeki filmi gönderiyoruz
           try {
             const { $myAxios } = useNuxtApp();
             const response = await $myAxios.get<Result<Movie[]>>(`/user/all_favorites/${userId}`); //BÖYLE OLDUĞUNDA PATH PARAMETRESİ OLARAK GİDİYOR DİĞER TÜRLÜ(FETCHDSER DAKİ ) QUERY OLUR //this.user?.id --> böyle olmamalı çünkü diğer kullanıcınıların favorilerine de bakabilmek istiyorum
             
-            this.favorites[userId] = response.data.data; //!!!!!!!!!!!!!!
+            this.favorites[userId] = response.data.data;
             return response.data.data;
           } catch (error) {
             console.error("allFavorites error", error);
@@ -136,6 +137,7 @@ export const useUserStore = defineStore('user', {
           }
         },
         async fetchWatchedMovies(userId: string): Promise<Movie[] | null> {
+          if(this.watched[userId]) return this.watched[userId];
           try {
             const { $myAxios} = useNuxtApp();
             const response = await $myAxios.get<Result<Movie[]>>(`/user/all_watched/${userId}`);

@@ -46,12 +46,13 @@ export const useAuthStore = defineStore('auth', {
   },
 
   actions: {
-    async fetchUser(id: string): Promise<User | null> {
+    async fetchUser(userId: string): Promise<User | null> {
       try {
         const { $myAxios } = useNuxtApp();
-        const {data: user } = await $myAxios.get<User>(`/user/get_user`, {
-          params: { id } 
-      });
+      //   const {data: user } = await $myAxios.get<User>(`/user/get_user`, {
+      //     params: { id } 
+      // });
+        const {data: user } = await $myAxios.get<User>(`/user/${userId}`);
         this.user = user;
         return user;
       } catch (error) {

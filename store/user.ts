@@ -48,12 +48,10 @@ export const useUserStore = defineStore('user', {
       getFollowerCount: (state) => state.followers.length,
     },
     actions: {
-      async fetchUser(id: string): Promise<User | null> {
+      async fetchUser(userId: string): Promise<User | null> {
           try {
             const { $myAxios } = useNuxtApp();
-            const {data: user } = await $myAxios.get<User>(`/user/get_user`, {
-              params: { id } 
-          });
+            const {data: user } = await $myAxios.get<User>(`/users/${userId}`);
             this.user = user;
             return user;
           } catch (error) {
@@ -71,8 +69,10 @@ export const useUserStore = defineStore('user', {
         async AddtoFavorites(movieId: number) {
           try {
             const { $myAxios } = useNuxtApp();
-            const response = await $myAxios.post(`/user/add_favorite/${movieId}`
-            );
+            // const response = await $myAxios.post(`/user/add_favorite/${movieId}`);
+            const response = await $myAxios.post('/users/favorites', {
+              MovieId: movieId
+            })
             return response.data;
           } catch (error) {
             console.error("AddtoFavorites error", error);
@@ -88,8 +88,7 @@ export const useUserStore = defineStore('user', {
           if(this.favorites[userId]) return this.favorites[userId]; //daha önce çekildiyse cachdeki filmi gönderiyoruz
           try {
             const { $myAxios } = useNuxtApp();
-            const response = await $myAxios.get<Result<Movie[]>>(`/user/all_favorites/${userId}`); //BÖYLE OLDUĞUNDA PATH PARAMETRESİ OLARAK GİDİYOR DİĞER TÜRLÜ(FETCHDSER DAKİ ) QUERY OLUR //this.user?.id --> böyle olmamalı çünkü diğer kullanıcınıların favorilerine de bakabilmek istiyorum
-            
+            const response = await $myAxios.get<Result<Movie[]>>(`/users/${userId}/favorites`);
             this.favorites[userId] = response.data.data;
             return response.data.data;
           } catch (error) {
@@ -107,8 +106,8 @@ export const useUserStore = defineStore('user', {
         async addToWatchList(movieId: number) {
           try {
             const { $myAxios } = useNuxtApp();
-            const response = await $myAxios.post(`/user/watchlist`, {
-              movieId: movieId
+            const response = await $myAxios.post(`/users/watchlists`, {
+              MovieId: movieId
             });
             return response.data;
           } catch (error) {
@@ -126,7 +125,9 @@ export const useUserStore = defineStore('user', {
           try {
             console.log("addToWatched movieId", movieId);
             const { $myAxios } = useNuxtApp();
-            const response = await $myAxios.post(`/user/add_watched/${movieId}`);
+            const response = await $myAxios.post('/users/watcheds', {
+              MovieId: movieId
+            });
           } catch (error) {
             console.error("addToWatched error", error);
             this.dialog = {
@@ -140,7 +141,7 @@ export const useUserStore = defineStore('user', {
           if(this.watched[userId]) return this.watched[userId];
           try {
             const { $myAxios} = useNuxtApp();
-            const response = await $myAxios.get<Result<Movie[]>>(`/user/all_watched/${userId}`);
+            const response = await $myAxios.get<Result<Movie[]>>(`/users/${userId}/watcheds`);
             this.watched[userId] = response.data.data;
             return response.data.data
           } catch (error) {
@@ -158,7 +159,7 @@ export const useUserStore = defineStore('user', {
         async toggleFollow(followingId: string) {
           const { $myAxios } = useNuxtApp();
           try {
-            const response = await $myAxios.post(`/user/follow/${followingId}`);
+            const response = await $myAxios.post(`/users/${followingId}/follows`);
             const data = response.data as {
               followId: number;
               isFollowing: boolean;
@@ -210,7 +211,7 @@ export const useUserStore = defineStore('user', {
         async fetchFollowings(userId: string) {
           const { $myAxios } = useNuxtApp()
           try {
-            const response = await $myAxios.get(`/user/followings/${userId}`);
+            const response = await $myAxios.get(`/users/${userId}/followings`);
             this.followings = response.data;
             return response.data
           } catch (error) {
@@ -226,7 +227,7 @@ export const useUserStore = defineStore('user', {
         async fetchFollowers(userId: string) {
           const { $myAxios } = useNuxtApp()
           try {
-            const response = await $myAxios.get(`/user/followers/${userId}`);
+            const response = await $myAxios.get(`/users/${userId}/followers`);
             this.followers = response.data;
             return this.followers
           } catch (error) {
@@ -238,23 +239,7 @@ export const useUserStore = defineStore('user', {
             };
             throw error;
           }
-        }
-
-
-        // getUserIdFromToken(): string | null {
-        //   const token = useCookie('token');
-        //   if (!token.value) return null;
-
-        //   try {
-        //     const base64Payload = token.value.split('.')[1];
-        //     const payload = JSON.parse(atob(base64Payload));
-        //     return payload.sub || null; // sub içine koyduk
-        //   } catch (e) {
-        //     console.error("Token parsing failed", e);
-        //     return null;
-        //   }
-        // }
-    
+        }    
     }
     
 })

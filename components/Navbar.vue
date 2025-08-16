@@ -46,9 +46,9 @@ const logout = async () => {
                   <NuxtLink to="/" class="text-white hover:text-gray-500">Listeler</NuxtLink>
                 </li>
                 <li v-if="authStore?.isAuthenticated" @click.outside class="relative text-white">
-                  <NuxtLink :to="`/user/${authStore?.user?.id}`">
+                  <a :href="`/user/${authStore?.user?.id}`">
                     <img @click="onToggleProfileMenu"  src="/assets/imgs/AccountIcon.svg" class="w-8 h-8 cursor-pointer" alt="profil"/>
-                  </NuxtLink>                  
+                  </a>                  
                 </li>
                 <li v-if="authStore?.isAuthenticated" >
                   <button @click="logout" class="button button-light">Çıkış Yap</button> 

@@ -16,30 +16,13 @@ const props = defineProps<({
   };
 })>();
 
-const trailer = await ref<{ key: string; name: string } | null>(null);
-//const play = ref(false);
+const trailer = ref<{ key: string; name: string } | null>(null);
 const activeTab = ref('poster');
 
 const {data: useTrailer} = await useTrailerMovie(props.movie.id);
 if (useTrailer.value.videos && useTrailer.value.videos.results.length) {
   trailer.value = await useTrailer.value.videos.results.find( (vid: { name: string}) => vid.name === "Official Trailer") || useTrailer.value.videos.results[0];
 }
-
-// const fetchTrailer = async()=> {
-//   try{
-//     const response = await fetch(`https://api.themoviedb.org/3/movie/${props.movie.id}?api_key=100267ca4cf87b2a6b6ecf8ad03153bd&append_to_response=videos`)
-//     const data = await response.json();
-//     if (data.videos && data.videos.results.length) {
-//       trailer.value = data.videos.results.find( (vid: { name: string}) => vid.name === "Official Trailer") || data.videos.results[0];
-//     }
-//     //console.log(trailer.value);
-//   }catch (error) {
-//     console.error('Error fetching trailer:', error);
-//   }
-// }
-// onMounted(() => {
-//   fetchTrailer();
-// });
 </script>
 
 <template>
@@ -62,7 +45,7 @@ if (useTrailer.value.videos && useTrailer.value.videos.results.length) {
                 <Youtube v-if="trailer" 
                   :src="`https://www.youtube.com/watch?v=${trailer.key}`" 
                   :video-id="trailer.key" 
-                  class="custom-iframe"/>  <!-- class="w-full h-[450px]" :width="800" :height="450"-->
+                 />  <!--  class="custom-iframe"class="w-full h-[450px]" :width="800" :height="450"-->
                 <div v-else>Trailer not Found.</div>
             </div>       
             

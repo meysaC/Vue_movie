@@ -114,20 +114,16 @@ async function fetchProfile(id) {
               <div class="flex flex-col items-start">
                 <!-- Avatar -->
                 <div class="flex w-24 h-24 md:w-32 md:h-32 rounded-full bg-gray-200 ml-4"></div>
-                
                 <!-- Info Bar -->
-                <div class="flex justify-end bg-black/50  w-full py-2 px-8">
+                <div class="flex justify-end bg-black/50  w-full py-2 px-0 md:px-4">
                   <p class="text-white pr-4">{{ currentProfile.userName }}</p>
-                  <div class="justify-end">
-
-                    <div class="flex flex-col text-center text-white">
-                      <NuxtLink to="/" class="text-white hover:text-red-800 text-lg pr-4">Followings</NuxtLink>
-                      <p>{{ followingsCount }}</p>
-                    </div>
-                    <div class="flex flex-col text-center text-white  mr-4">
-                      <NuxtLink to="/" class="text-white hover:text-red-800 text-lg">Followers</NuxtLink> 
-                      <p>{{ followersCount }}</p>
-                    </div>
+                  <div class="flex flex-col text-center text-white">
+                    <NuxtLink to="/" class="text-white hover:text-red-800 text-lg pr-4">Followings</NuxtLink>
+                    <p>{{ followingsCount }}</p>
+                  </div>
+                  <div class="flex flex-col text-center text-white  mr-4">
+                    <NuxtLink to="/" class="text-white hover:text-red-800 text-lg">Followers</NuxtLink> 
+                    <p>{{ followersCount }}</p>
                   </div>
                 </div>
               </div>

@@ -32,7 +32,6 @@ watch(() => authStore.token, (newToken) => {
     }, 1000) // 1 saniye bekleme
   }
 })
-//movie3333 Password_3333
 </script>
 
 

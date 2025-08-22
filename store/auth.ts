@@ -13,7 +13,6 @@ export const useAuthStore = defineStore('auth', {
       password: ""
     },
     user: null as User | null,
-    //simpleUser: null as SimpleUser | null,
     token: useCookie("token").value || null, //benim token 
     stateToken: useCookie("stateToken").value || null, //google login için gerekli state token 
     dialog: {
@@ -25,9 +24,6 @@ export const useAuthStore = defineStore('auth', {
   }),
 
   getters: {
-    // getRegistrationForm(state) {
-    //   return state.registrationForm;
-    // },
     getToken(state) {
       return state.token;
     },
@@ -40,19 +36,13 @@ export const useAuthStore = defineStore('auth', {
     getterUserIdFromToken(state) {
       return state.user?.id
     }
-    // getSimpleUser(state) {
-    //   return state.simpleUser;
-    // }
   },
 
   actions: {
     async fetchUser(userId: string): Promise<User | null> {
       try {
         const { $myAxios } = useNuxtApp();
-      //   const {data: user } = await $myAxios.get<User>(`/user/get_user`, {
-      //     params: { id } 
-      // });
-        const {data: user } = await $myAxios.get<User>(`/user/${userId}`);
+        const {data: user } = await $myAxios.get<User>(`/users/${userId}`);
         this.user = user;
         return user;
       } catch (error) {
@@ -218,7 +208,6 @@ export const useAuthStore = defineStore('auth', {
       try {
         const base64Payload = token.split('.')[1];
         const payload = JSON.parse(atob(base64Payload));
-        console.log("getUserIdFromToken auth",payload.sub )
         return payload.sub || null;
       } catch (e) {
         console.error("Token parsing failed", e);

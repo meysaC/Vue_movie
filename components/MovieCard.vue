@@ -22,7 +22,7 @@ function handleWatched() {
     <div class="movie-img">
       <img :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`" alt="" class="img-poster"> <!--posterPath  -->
       <p class="review">{{ movie.vote_average }}</p> <!--movie divinin içinde çünkü overview ü absolute olarak imagenin üstünde göstermek istiyoruz -->
-      <div class="actions">  
+      <div class="actions bg-black bg-opacity-50 rounded-lg hover:bg-opacity-70 hover:translate-y-1 transition-all duration-300">  
         <button @click="handleFavorite" class="action-btn"><img src="/assets/imgs/FavoriteIcon.svg"></button>
         <button @click="handleWatched"  class="action-btn"><img src="/assets/imgs/WatchListIcon2.svg"></button>
         <button  class="action-btn"><img src="/assets/imgs/WatchedIcon.svg"></button>
@@ -101,7 +101,6 @@ function handleWatched() {
       flex-direction: column;
       gap: 8px;
       padding: 8px;
-
     }
     .action-btn {
       background-color: transparent;//rgba(0, 0, 0, 0.5);

@@ -7,7 +7,7 @@ import { useUserStore } from "~/store/user";
 
 const searchInput = ref(""); //kullanıcı arama metni
 
-const { data,  error } = await useNowMovies(); // Şu an oynayan filmler pending,
+const { data, error } = await useNowMovies(); // Şu an oynayan filmler pending,
 const { data: searchResults } = await useSearchMovie(searchInput); // Arama sonuçları , refresh
 
 const userIdInput = ref("");
@@ -31,9 +31,9 @@ useHead({
     <div class="home">
         <Navbar/>
          <!--<Hero/>  mt-[60px] -->
-
+        <HeroSection/>
         <!-- Search -->
-        <div class="container search ">
+        <div class="search"> <!--container -->
             <!-- v-model ->>> we wanna hook up a data value to this input to capture the user's search term  -->
             <!-- v-model.lazy->instead of updating on each keystroke its gonna update when te user enters and leaves the actual input itself-->
             <input
@@ -58,18 +58,18 @@ useHead({
 
         <!-- Movies -->
         <div v-else class="container movies">
-              <!-- Search Movie -->
-            <div v-if="searchInput !== ''" id="movie-grid" class="movies-grid">
-                <MovieCard 
-                  v-for="movie in searchResults?.results" 
-                  :movie="movie"/>
-            </div>
-            <!-- Now Streaming -->
-            <div v-else id="movie-grid" class="movies-grid">            
+          <!-- Search Movie -->
+          <div v-if="searchInput !== ''" id="movie-grid" class="movies-grid">
               <MovieCard 
-                v-for="movie in data?.results" 
-                :movie="movie"/>                
-            </div>
+                v-for="movie in searchResults?.results" 
+                :movie="movie"/>
+          </div>
+          <!-- Now Streaming -->
+          <div v-else id="movie-grid" class="movies-grid">            
+            <MovieCard 
+              v-for="movie in data?.results" 
+              :movie="movie"/>                
+          </div>
         </div>
     </div>
 </template>

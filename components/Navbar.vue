@@ -6,6 +6,7 @@ import { useAuthStore } from '~/store/auth'
 const isMenuOpen = ref(false);
 const isProfileMenuOpen = ref(false)
 const showLoginModal = ref(false)
+const showRecommendModal = ref(false)
 
 const authStore = useAuthStore()
 
@@ -45,6 +46,9 @@ const logout = async () => {
                 <li>
                   <NuxtLink to="/" class="text-white hover:text-gray-500">Listeler</NuxtLink>
                 </li>
+                <li>
+                  <NuxtLink @click="showRecommendModal = true"  class="text-white hover:text-gray-500">Öneri AI</NuxtLink> <!-- to="/movies/recommend" -->
+                </li>
                 <li v-if="authStore?.isAuthenticated" @click.outside class="relative text-white">
                   <a :href="`/user/${authStore?.user?.id}`">
                     <img @click="onToggleProfileMenu"  src="/assets/imgs/AccountIcon.svg" class="w-8 h-8 cursor-pointer" alt="profil"/>
@@ -66,10 +70,11 @@ const logout = async () => {
                 @click="onToggleMenu"
                 style="color: #ffffff;"
                 :name="isMenuOpen ? 'tdesign:close' : 'tdesign:view-list' "  
-                class="text-xl cursor-pointer md:hidden"/> <!--cursor-pointer(fare el şeklinde) md:hidden (büyük ekranlarda gizli olucak)-->
+                class="text-xl cursor-pointer md:hidden"/>
             </div>
         </nav>
         <LoginModal :show="showLoginModal" @close="showLoginModal = false" />
+        <ReccommendModal :show="showRecommendModal" @close="showRecommendModal = false" />
     </div>
  </template>
  

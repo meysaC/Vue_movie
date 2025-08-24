@@ -95,61 +95,129 @@ async function fetchProfile(id) {
     <!-- Banner -->
     <div id="Banner" class="w-full">
       <div class="w-full">
+        
         <div class="relative w-full h-[400px] sm:h-[500px] md:h-[600px]">
-            <!-- IMAGE -->
-            <div class="absolute inset-0">
-                <img src="/assets/imgs/movieHero.jpg" alt="shot" class="absolute top-0 left-0 w-full h-full object-cover">
-            </div>
+          <!-- IMAGE -->
+          <div class="absolute inset-0">
+            <img :src="`https://images.pexels.com/photos/7991579/pexels-photo-7991579.jpeg?auto=compress&cs=tinysrgb&w=1200&h=675&fit=crop`" alt="shot" class="absolute top-0 left-0 w-full h-full object-cover px-4"> <!--src="/assets/imgs/movieHero.jpg" -->
+            <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/50 to-transparent" />
+          </div>
 
-            <!--Follow buton -->
-            <div class="absolute top-4 right-4 z-30">
-              <button v-if="routeUserId !== userId" type="button" href="" class="button text-sm" 
-                :class="isFollowing ? '' : 'bg-green-500 hover:bg-green-700'"
-                @click="toggleFollow"
-              >{{ isFollowing ? "Unfollow" : "Follow" }}</button>
-            </div>
+          <!--Follow buton -->
+          <div class="absolute top-4 right-4 space-x-2 mr-2 z-30">
+            <button v-if="routeUserId !== userId" type="button" href="" class="button button-light text-sm" 
+              :class="isFollowing ? '' : 'bg-green-500 hover:bg-green-700'"
+              @click="toggleFollow"
+            >{{ isFollowing ? "Unfollow" : "Follow" }}</button>
+          </div>
 
-            <!-- Information -->
-            <div class="absolute bottom-0 left-0 w-full z-20">
-              <div class="flex flex-col items-start">
-                <!-- Avatar -->
-                <div class="flex w-24 h-24 md:w-32 md:h-32 rounded-full bg-gray-200 ml-4"></div>
-                <!-- Info Bar -->
-                <div class="flex justify-end bg-black/50  w-full py-2 px-0 md:px-4">
-                  <p class="text-white pr-4">{{ currentProfile.userName }}</p>
-                  <div class="flex flex-col text-center text-white">
-                    <NuxtLink to="/" class="text-white hover:text-red-800 text-lg pr-4">Followings</NuxtLink>
-                    <p>{{ followingsCount }}</p>
-                  </div>
-                  <div class="flex flex-col text-center text-white  mr-4">
-                    <NuxtLink to="/" class="text-white hover:text-red-800 text-lg">Followers</NuxtLink> 
-                    <p>{{ followersCount }}</p>
-                  </div>
+          <!-- Information 
+          <div class="absolute bottom-0 left-0 w-full px-4 z-20">
+            <div class="flex flex-col items-start">-->
+              <!-- Avatar 
+              <div class="flex w-24 h-24 md:w-32 md:h-32 rounded-full bg-gray-200 ml-4"></div>-->
+              <!-- Info Bar 
+              <div class="flex justify-end  w-full py-2 px-0 md:px-4">
+                <p class="text-white pr-4">{{ currentProfile.userName }}</p>
+                <div class="flex flex-col text-center text-white">
+                  <NuxtLink to="/" class="text-white hover:text-red-800 text-lg pr-4">Followings</NuxtLink>
+                  <p>{{ followingsCount }}</p>
+                </div>
+                <div class="flex flex-col text-center text-white  mr-4">
+                  <NuxtLink to="/" class="text-white hover:text-red-800 text-lg">Followers</NuxtLink> 
+                  <p>{{ followersCount }}</p>
                 </div>
               </div>
             </div>
+          </div>-->
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="relative -mt-20 pb-8">
+        <div class="flex flex-col lg:flex-row lg:items-end lg:space-x-8">
+          <!-- Avatar  -->
+          <div class="relative">
+            <img
+              src=""
+              alt=""
+              class="w-32 h-32 lg:w-40 lg:h-40 rounded-full object-cover border-4 bg-gray-700 border-gray-900 shadow-xl"/>
+              <!-- Avatar Edit -->
+              <button class="absolute bottom-2 right-2 p-2 bg-amber-500 rounded-full hover:bg-amber-400 transition-colors duration-200">
+                <!-- edit ikonu -->
+              </button>
+            </div>
+
+          <!--  Profile Info -->
+          <div class="flex-1 mt-4 lg:mt-0">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h1 class="text-white text-3xl lg:text-4xl font-bold mb-2">{{ currentProfile.userName }}</h1>
+                <div class="flex items-center space-x-4 text-gray-400 mb-4">
+                  <div class="flex items-center space-x-1">
+                    <!-- yer ikon -->
+                    <span>Los Angeles, CA</span>
+                  </div>
+                  <div class="flex items-center space-x-1">
+                    <!-- takvim ikon -->
+                    <span>Joined March 2021</span>
+                  </div>
+                </div>
+
+                <div class="flex items-center space-x-4 mb-4">
+                  <div class="flex items-center space-x-1 text-gray-400 ">
+                    <NuxtLink to="/" class="text-gray-400 hover:text-amber-400">Followers {{ followersCount }}</NuxtLink> 
+                  </div>
+                  <div class="flex items-center space-x-1 text-gray-400">
+                    <NuxtLink to="/" class="text-gray-400 hover:text-amber-400">Followings {{ followingsCount }}</NuxtLink> 
+                  </div>
+
+                </div>
+
+                <p class="text-gray-300 max-w-2xl leading-relaxed">
+                  Passionate cinephile with a love for indie films and classic cinema. 
+                  Always looking for hidden gems and thought-provoking narratives.
+                </p>
+                <div class="flex items-center space-x-1 mt-2">
+                  <!-- link ikon -->
+                  <a href="#" class="text-amber-400 hover:text-amber-300 transition-colors duration-200"> <!-- #fbbf24 !!!! -->
+                    letterboxd.com/cinelover92
+                  </a>
+                </div>
+              </div>
+
+              <!--  Action Buttons -->
+              <div v-if="routeUserId !== userId" class="flex space-x-3 mt-4 sm:mt-0">
+                <button class="button button-light flex items-center space-x-2 px-6 py-3 bg-gray-800 text-white rounded-lg font-semibold hover:bg-gray-700 transition-colors duration-200 border border-gray-700">
+                  <span>Edit</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Tab Navigation -->
-    <div class="mt-8 border-b border-gray-200 ml-6">
-      <nav class="flex space-x-4">
+    <div class="space-x-4 mt-8 ml-6">
         <button
           v-for="tab in tabs"
           :key="tab.key"
           @click="activeTab = tab.key"
-          class="py-2 px-4 text-sm font-medium border-b-2"
+          class="button py-2 px-4 text-white"
           :class="activeTab === tab.key
-            ? 'border-black text-black'
-            : 'border-transparent text-gray-500 hover:text-black hover:border-gray-300'"
+            ? 'bg-[#ffc928] '
+            : 'bg-[#444]' "
         >
           {{ tab.label }}
         </button>
-      </nav>
     </div>
 
-    <!-- Dinamik İçerik -->
+    <!-- Dynamic Content -->
     <div class="flex-1 overflow-y-auto p-6 ">
       <component
        v-if="tabComponents[activeTab]"
@@ -164,6 +232,6 @@ async function fetchProfile(id) {
 <style lang="scss" scoped>
   .button {
     align-self: flex-start;
-    margin-bottom: 32px;
+    //margin-bottom: 32px;
   }
 </style>

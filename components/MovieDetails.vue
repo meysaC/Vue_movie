@@ -36,17 +36,17 @@ if (useTrailer.value.videos && useTrailer.value.videos.results.length) {
         <div class="movie-info">
             
           <!--Movie Poster-->
-            <div v-if="activeTab === 'poster' " class="movie-img">
+            <div v-if="activeTab === 'poster' " class="movie-img " >
               <img :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`" alt="">
             </div>
 
             <!--Movie Trailer-->
-            <div v-else="activeTab === 'trailer' " class="tariler-container "> <!--flex flex-col mt-10  -->
+            <div v-else="activeTab === 'trailer' " class="tariler-container ">
                 <Youtube v-if="trailer" 
                   :src="`https://www.youtube.com/watch?v=${trailer.key}`" 
                   :video-id="trailer.key" 
-                 />  <!--  class="custom-iframe"class="w-full h-[450px]" :width="800" :height="450"-->
-                <div v-else>Trailer not Found.</div>
+                 />
+                <div v-else>We didn't find the trailer.</div>
             </div>       
             
             <!--Movie Content-->
@@ -131,7 +131,10 @@ if (useTrailer.value.videos && useTrailer.value.videos.results.length) {
       transition: background 0.3s;
       
       &.active {
-        background: #ff4500;
+        background: #ffc928e6; //#ff4500
+      }
+      &:hover {
+        background: #916d01; //#555
       }
     }
   }

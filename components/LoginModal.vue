@@ -36,37 +36,35 @@ watch(() => authStore.token, (newToken) => {
 
 
 <template>
-  <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center bg-opacity-50">
-    <div class="bg-white w-full max-w-md p-6 rounded-lg shadow-lg relative">
-      <button @click="close" class="absolute top-2 rigth-2 text-gray-500 hover:text-black">
-        ✕
-      </button>
-  <!-- Login Form -->
-    <form @submit.prevent="submitLogin">
-      <input 
-        v-model="authStore.registrationForm.userName" 
-        placeholder="Kullanıcı Adı" 
-        required 
-        class="w-full my-2 p-2 border rounded"/>
-      <input 
-        v-model="authStore.registrationForm.password" 
-        type="password" 
-        placeholder="Şifre" 
-        required 
-        class="w-full my-2 p-2 border rounded"/>
-      <button type="submit" :disabled="loading" class="w-full bg-[#28a745] text-white my-2 p-2 border mt-2">
-        {{ loading ? "Giriş yapılıyor..." : "Giriş Yap" }}
-      </button>
-    </form>
-    <p v-if="authStore.dialog.show" :class="`dialog ${authStore.dialog.type}`">
-      {{ authStore.dialog.message }}
-    </p>
-    <button @click="authStore.googleLogin()" class="w-full bg-[#4285f4] text-white p-2 rounded mt-2" > <!-- class="google-login-btn" -->
-      Google ile Giriş Yap
-    </button>
-  </div>
-</div>
+  <div v-if="show" @click.self="close" class="fixed flex items-center justify-center bg-black bg-opacity-50 inset-0 z-50 ">
+    <div class="relative w-[90vw] sm:w-[80vw] md:w-[70vw] lg:w-[60vw] max-w-[1000px] p-4 sm:p-6 bg-[#111827] rounded-lg shadow-lg my-8"> <!--w-full max-w-[1000px] p-6 -->
+      <button  @click="close" class="button absolute -top-4 -right-4 ">✕</button>
 
+      <!-- Login Form -->
+      <form @submit.prevent="submitLogin">
+        <input 
+          v-model="authStore.registrationForm.userName" 
+          placeholder="Kullanıcı Adı" 
+          required 
+          class="w-full my-2 p-2 border rounded"/>
+        <input 
+          v-model="authStore.registrationForm.password" 
+          type="password" 
+          placeholder="Şifre" 
+          required 
+          class="w-full my-2 p-2 border rounded"/>
+        <button type="submit" :disabled="loading" class="w-full bg-[#28a745] text-white my-2 p-2 border mt-2">
+          {{ loading ? "Giriş yapılıyor..." : "Giriş Yap" }}
+        </button>
+      </form>
+      <p v-if="authStore.dialog.show" :class="`dialog ${authStore.dialog.type}`">
+        {{ authStore.dialog.message }}
+      </p>
+      <button @click="authStore.googleLogin()" class="w-full bg-[#4285f4] text-white p-2 rounded mt-2" > <!-- class="google-login-btn" -->
+        Google ile Giriş Yap
+      </button>
+    </div>
+  </div>
 </template>
 
 <style scoped>

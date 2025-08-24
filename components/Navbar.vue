@@ -28,11 +28,11 @@ const logout = async () => {
  
  <template>
     <!-- custom-reset bg-gradient-to-t give the linear gradient color from [..] this color ( bg-gradient-to-t from-[#fbc2eb] to-[#a6c1ee] h-screen)-->
-    <div  class="only-tailwind bg-[#211f1f]">  <!-- font-[Poppins-Light]-->  
+    <div class="only-tailwind">  <!--bg-[#] font-[Poppins-Light]-->  
         <nav class="flex justify-between items-center w-[92%] mx-auto transition-all duration-500"
-          :class="isMenuOpen ? 'pb-64' : 'pb-0'"  > <!--pb değil mb olcak!!!  flex(yan yana gelir) justify-between(aralarında boşluk olur) items-center(y düzleminde ortalı kalır), w-[92%]->nav width tüm widthin 92 sini kaplar, mx-auto(hepsi center lı) -->
+          :class="isMenuOpen ? 'pb-[268px]' : 'pb-0'"  > <!--pb değil mb olcak!!!  flex(yan yana gelir) justify-between(aralarında boşluk olur) items-center(y düzleminde ortalı kalır), w-[92%]->nav width tüm widthin 92 sini kaplar, mx-auto(hepsi center lı) -->
             <NuxtLink to="/">
-              <img class="w-14 " src="/public/MoviePx_logo.png">
+              <img class="w-[140px] " src="/public/moviepx-logo (2).png"> <!--MoviePx_logo-->
             </NuxtLink>
             
             <!--md:static(buton ve iconla yan yana olucak listeler yoksa biri yukarda biri aşağıda oluyo)-->
@@ -41,13 +41,13 @@ const logout = async () => {
               class="absolute flex items-center md:static md:min-h-fit md:w-auto w-full left-0 px-5 pt-5 duration-500 "> <!--min-h-[60vh] absolute dicez sonra diğerlerinde fixed direction vericez screen lerde(küçük ekranlarda row(satır satır) büyük ekranlarda col(sütun sütun)) w-full(açıldığı zaman tüm widthi kaplar)-->
               <ul class="flex md:flex-row flex-col md:items-center md:gap-[4vw] gap-8 list-none"> <!--duration-500(animasyonlu açılıyor liste) list-none-> corePlugins.preflight: false yaptığın için tarayıcı varsayılan stilleri korunuyor,Tailwind'de list-style'ı kaldırmak için  -->
                 <li>
-                  <NuxtLink to="/" class="text-white hover:text-gray-500">Ana Sayfa</NuxtLink>
+                  <NuxtLink to="/" class="text-white hover:text-gray-500">Home</NuxtLink>
                 </li>
                 <li>
-                  <NuxtLink to="/" class="text-white hover:text-gray-500">Listeler</NuxtLink>
-                </li>
-                <li>
-                  <NuxtLink @click="showRecommendModal = true"  class="text-white hover:text-gray-500">Öneri AI</NuxtLink> <!-- to="/movies/recommend" -->
+                  <div class="flex items-center cursor-pointer space-x-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-lg hover:from-amber-400 hover:to-orange-400 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-amber-500/25">
+                    <NuxtLink  @click="showRecommendModal = true">Get Inspired!</NuxtLink>
+                    <img src="/assets/imgs/Sparkles.svg" alt="" class="w-4 h-4 ">
+                  </div>
                 </li>
                 <li v-if="authStore?.isAuthenticated" @click.outside class="relative text-white">
                   <a :href="`/user/${authStore?.user?.id}`">
@@ -55,17 +55,15 @@ const logout = async () => {
                   </a>                  
                 </li>
                 <li v-if="authStore?.isAuthenticated" >
-                  <button @click="logout" class="button button-light">Çıkış Yap</button> 
+                  <button @click="logout" class="button button-light">Logout</button> 
                 </li>
                 <li v-else>
-                  <button @click="showLoginModal = true" class="button">Giriş Yap</button>                
+                  <button @click="showLoginModal = true" class="button">Login</button>                
                 </li>
               </ul>
             </div>
 
             <div class="flex items-center gap-4"> <!-- the button under align properly -->
-             <!-- <NuxtLink :to="linkTo" class="button-nav text-white h-6 px-5">{{ linkText }}</NuxtLink> button button-light class a button u ekleyince default.scss deki buton ayarları kullanılıyo-->
-              
               <Icon 
                 @click="onToggleMenu"
                 style="color: #ffffff;"

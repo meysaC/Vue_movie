@@ -1,30 +1,9 @@
 <script setup lang="ts">
+import { NuxtLink } from '#components';
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useTrailerMovie } from '~/composable/useTrailerMovie';
-
-// interface Props {
-//   movie: {
-//     id: number
-//     title: string
-//     overview: string
-//     backdrop_path?: string
-//     vote_average: number
-//     release_date: string
-//     runtime: number
-//   }
-// }
-// const props = defineProps<Props>()
-
-
-const movie = ref({
-  id: 1307078,
-  title: "My Oxford Year",
-  overview: "My Oxford Year",
-  backdrop_path: "",
-  vote_average: 8.5,
-  release_date: "2023-10-01",
-  runtime: 120
-})
+import { useNowMovies } from "~/composable/useNowMovies";
+import { useSingleMovie } from "~/composable/useSingleMovie";
 
 declare global {
   interface Window {
@@ -40,11 +19,26 @@ const isPaused = ref(false)
 const hoverTimer = ref<NodeJS.Timeout | null>(null)
 const trailer = ref<any>(null)
 const player = ref<any>(null)
+const movie = ref<any>(null)
 
-// Get trailer data
-const { data: useTrailer } = await useTrailerMovie(movie.value.id)
-if (useTrailer.value.videos && useTrailer.value.videos.results.length) {
-  trailer.value = useTrailer.value.videos.results.find((vid: { name: string }) => vid.name === "Official Trailer") || useTrailer.value.videos.results[0]
+//Get Trending Movies 
+const { data:nowMovies, error } = await useNowMovies();
+if (nowMovies.value && nowMovies.value.results?.length > 0) {
+  const randomIndex = Math.floor(Math.random() * nowMovies.value.results.length);
+  const randomId = nowMovies.value.results[randomIndex].id;
+
+  const { data: singleMovie } = await useSingleMovie(randomId);
+  if (singleMovie.value) {
+    movie.value = singleMovie.value;
+  }
+}
+
+//trailer data 
+if(movie.value) {
+  const { data: useTrailer } = await useTrailerMovie(movie.value.id)
+  if (useTrailer.value.videos && useTrailer.value.videos.results.length) {
+    trailer.value = useTrailer.value.videos.results.find((vid: { name: string }) => vid.name === "Official Trailer") || useTrailer.value.videos.results[0]
+  }
 }
 
 // YouTube Player API
@@ -53,8 +47,8 @@ const initializePlayer = () => {
 
     // Create YouTube player instance
   player.value = new window.YT.Player('youtube-player' as any, {
-    height: '100%',
-    width: '100%',
+    // height: '100%',
+    // width: '100%',
     videoId: trailer.value.key,
     playerVars: {
       autoplay: 1,
@@ -118,7 +112,6 @@ const handleMouseEnter = () => {
   }, 1000)
 }
 
-
 const handleMouseLeave = () => {
   isHovering.value = false
   if (hoverTimer.value) {
@@ -165,7 +158,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="relative h-96 lg:h-[32rem] overflow-hidden rounded-2xl mx-4 sm:mx-6 lg:mx-8 mt-8">
+  <div class="relative h-96 lg:h-[40rem] overflow-hidden mx-4 mt-8">
     
     <!-- Main Image -->
     <img
@@ -178,25 +171,21 @@ onUnmounted(() => {
       @click="handleClick"
     />
     
-    <!-- YouTube Player && isVideoPlaying-->
+    <!-- YouTube Player -->
     <div 
-      v-if="trailer "
+      v-if="trailer"
       class="absolute inset-0 w-full h-full"
       @mouseenter="handleMouseEnter"
       @mouseleave="handleMouseLeave"
       @click="handleClick"
     >
-      <div id="youtube-player" class="w-full h-full"></div>
+      <div id="youtube-player" class="absolute top-1/2 left-1/2 w-full h-full min-w-[177.77vh] min-h-[55vw] -translate-x-1/2 -translate-y-1/2"></div> <!-- w-full h-full-->
     </div>
+    <!-- <div @click="handleClick" class="absolute inset-0 bg-gradient-to-t from-[#111827] via-gray-900/50 to-transparent" /> -->
     
-    <!-- Gradient Overlay -->
-    <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent pointer-events-none" />
-    
+
     <!-- Play/Pause Icon Overlay -->
-    <div 
-      v-if="isVideoPlaying"
-      class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 hover:opacity-100 transition-opacity duration-200"
-    >
+    <div v-if="isVideoPlaying" class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 hover:opacity-100 transition-opacity duration-200">
       <div class="bg-black/50 rounded-full p-4">
         <svg
           v-if="isPaused"
@@ -218,58 +207,45 @@ onUnmounted(() => {
     </div>
     
     <!-- Content -->
-    <div class="absolute inset-0 flex items-center pointer-events-none">
+    <div class="absolute inset-0 flex items-end lg:items-center pointer-events-none lg:pt-[150px]">
       <div class="px-8 lg:px-16 max-w-2xl">
-        <h1 class="text-4xl lg:text-6xl font-bold text-white mb-4">
-          {{ movie.title }}
-        </h1>
-        
-        <div class="flex items-center space-x-4 mb-4">
-          <div class="flex items-center space-x-1">
-            <svg class="h-5 w-5 text-amber-400 fill-current" viewBox="0 0 24 24">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>
-            <span class="text-white font-semibold">{{ movie.vote_average.toFixed(1) }}</span>
+        <div class="hover:opacity-100" :class="{ 'opacity-50 ': isVideoPlaying }">
+          <h1 class="text-xl lg:text-6xl font-bold text-white mb-4">
+            {{ movie.title }}
+          </h1>
+          
+          <div class="flex items-center space-x-4 mb-4">
+            <div class="flex items-center space-x-1">
+              <svg class="h-5 w-5 text-amber-400 fill-current" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+              <span class="text-white font-semibold">{{ movie.vote_average.toFixed(1) }}</span>
+            </div>
+            <span class="text-gray-300">
+              {{ new Date(movie.release_date).getFullYear() }} • {{ movie.runtime }} min
+            </span> <!-- • Sci-Fi -->
           </div>
-          <span class="text-gray-300">
-            {{ new Date(movie.release_date).getFullYear() }} • Sci-Fi • {{ movie.runtime }} min
-          </span>
+          
+          <p class="hidden sm:block text-gray-200 text-lg mb-8 leading-relaxed sm:line-clamp-2">
+            {{ movie.overview.slice(0,250) }}
+            <span v-if="movie.overview.length > 250">...</span>
+          </p>
         </div>
         
-        <p class="text-gray-200 text-lg mb-8 leading-relaxed">
-          {{ movie.overview }}
-        </p>
-        
         <div class="flex space-x-4 pointer-events-auto">
-          <button class="flex items-center space-x-2 bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors duration-200">
-            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M8 5v14l11-7z"/>
-            </svg>
-            <span>Watch Trailer</span>
-          </button>
-          
-          <button class="flex items-center space-x-2 bg-gray-800/80 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors duration-200">
-            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="16" x2="12" y2="12"></line>
-              <line x1="12" y1="8" x2="12.01" y2="8"></line>
-            </svg>
-            <span>More Info</span>
-          </button>
+          <NuxtLink :to="{name: 'movies-id', params: { id: movie.id}}" class="button button-light flex items-center text">More Info</NuxtLink>
           
           <!-- Sound Toggle Button -->
           <button 
             v-if="isVideoPlaying"
             @click="toggleMute"
-            class="flex items-center justify-center w-12 h-12 bg-gray-800/80 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200"
-          >
+            class="button button-light flex items-center justify-center"> <!-- w-12 h-12 bg-gray-800/80 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200-->
             <svg
               v-if="isMuted"
               class="h-5 w-5"
               fill="none"
               stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+              viewBox="0 0 24 24">
               <path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/>
             </svg>
             <svg
@@ -277,91 +253,17 @@ onUnmounted(() => {
               class="h-5 w-5"
               fill="none"
               stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+              viewBox="0 0 24 24">
               <path d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
             </svg>
           </button>
         </div>
+
       </div>
     </div>
+
   </div>
 </template>
 
 <style scoped>
-/* Ensure YouTube player fills container properly */
-#youtube-player {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-/* Hide YouTube player controls */
-#youtube-player iframe {
-  pointer-events: none;
-}
-
-/* Allow clicks on our custom overlay */
-.pointer-events-auto {
-  pointer-events: auto;
-}
 </style>
-
-
-
-
-<!-- <script setup lang="ts">
-
-</script>
-
-<template>
-    <div class="relative h-96 lg:h-[42rem] overflow-hidden rounded-2xl mx-4 sm:mx-6 lg:mx-8 mt-8">
-      <img
-        src="https://images.pexels.com/photos/7991579/pexels-photo-7991579.jpeg?auto=compress&cs=tinysrgb&w=1200&h=675&fit=crop"
-        alt="Featured Movie"
-        class="w-full h-full object-cover"
-      />
-      
-      <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
-      
-      <div class="absolute inset-0 flex items-center">
-        <div class="px-8 lg:px-16 max-w-2xl">
-          <h1 class="text-4xl lg:text-6xl font-bold text-white mb-4">
-            Dune: Part Two
-          </h1>
-          
-          <div class="flex items-center space-x-4 mb-4">
-            <div class="flex items-center space-x-1">
-              <Star class="h-5 w-5 text-amber-400 fill-current" />
-              <span class="text-white font-semibold">8.9</span>
-            </div>
-            <span class="text-gray-300">2024 • Sci-Fi • 166 min</span>
-          </div>
-          
-          <p class="text-gray-200 text-lg mb-8 leading-relaxed">
-            Paul Atreides unites with Chani and the Fremen while seeking revenge against 
-            the conspirators who destroyed his family. An epic continuation of the saga.
-          </p>
-          
-          <div class="flex space-x-4">
-            <button class="flex items-center space-x-2 bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors duration-200">
-              <Play class="h-5 w-5" />
-              <span>Watch Trailer</span>
-            </button>
-            
-            <button class="flex items-center space-x-2 bg-gray-800/80 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors duration-200">
-              <Info class="h-5 w-5" />
-              <span>More Info</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-</template>
-
-
-<style scoped>
-
-</style> -->

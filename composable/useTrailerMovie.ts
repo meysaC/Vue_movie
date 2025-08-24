@@ -9,7 +9,6 @@ export function useTrailerMovie<Result>(movieId: number) {
                     movieId: movieId, 
                 },
             });
-            console.log("useTrailerMovie data:", data);
             return data;
         } catch (error) {
             console.error("useTrailerMovie Hatası:", error);

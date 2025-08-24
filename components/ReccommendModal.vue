@@ -84,58 +84,64 @@ const loadTrailer = async (movieId: number) => {
 
 <template>
   <div v-if="show" @click.self="close" class="fixed flex items-center justify-center bg-black bg-opacity-50 inset-0 z-50 ">
-    <div class="relative w-[90vw] sm:w-[80vw] md:w-[70vw] lg:w-[60vw] max-w-[1000px] p-4 sm:p-6 bg-white rounded-lg shadow-lg my-8"> <!--w-full max-w-[1000px] p-6 -->
+    <div class="relative w-[90vw] sm:w-[80vw] md:w-[70vw] lg:w-[60vw] max-w-[1000px] p-4 sm:p-6 bg-[#111827] rounded-lg shadow-lg my-8"> <!--w-full max-w-[1000px] p-6 -->
       <button  @click="close" class="button absolute -top-4 -right-4 ">✕</button>
 
       <div v-if="showForm" class="mb-4">
-        <textarea v-model="description" placeholder="Filmi tarif edin..." class="w-full p-2 border rounded"></textarea>
-        <button @click="getRecommendations" class="button mt-2 px-4 py-2 rounded">Öneri Al</button>
+        <textarea v-model="description" placeholder="Descripe what type of movie you like to watch..." class="w-full p-2 border rounded"></textarea>
+        <button @click="getRecommendations" class="button mt-2 px-4 py-2 rounded">Get Recommendations</button>
       </div>
 
-      <div v-else>
-        <div class="sticky top-0 z-10 mb-4">
-          <h3>Önerilen Filmler:</h3>
-          <p><em>{{ movieStore.naturalRecommendation }}xdcfvgbhnjmklfksbdvghbrjebvsrbv hj nvjerkvnge jergknwrgl fnjkreljnre newkgşnrwjkng
-            xdcfvgbhnjmklfksbdvghbrjebvsrbv hj nvjerkvnge jergknwrgl fnjkreljnre newkgşnrwjkng
-            xdcfvgbhnjmklfksbdvghbrjebvsrbv hj nvjerkvnge jergknwrgl fnjkreljnre newkgşnrwjkng
-            xdcfvgbhnjmklfksbdvghbrjebvsrbv hj nvjerkvnge jergknwrgl fnjkreljnre newkgşnrwjkng
-            xdcfvgbhnjmklfksbdvghbrjebvsrbv hj nvjerkvnge jergknwrgl fnjkreljnre newkgşnrwjkng
-          </em></p>
-        </div>
+      <div v-else class="flex flex-col">
+        <div class="overflow-y-auto max-h-[550px] sm:max-h-[750px]">
           
-        <div v-if="movieStore.movieDetails.length"  class="grid grid-cols-1 sm:grid-cols-2 max-h-[850px] overflow-y-auto pb-20 gap-4">
-          <div v-for="movieRecommend in movieStore.movieDetails" :key="movieRecommend.id" class="mb-2">
-            
-            <div class="tabs">
-              <button @click="activeTab[movieRecommend.id] = 'poster'" :class="{ active: activeTab[movieRecommend.id] === 'poster' }">Afiş</button>
-              <button @click="() => {
-                  activeTab[movieRecommend.id] = 'trailer'; 
-                  if(!trailer[movieRecommend.id]) loadTrailer(movieRecommend.id);
-              }" :class="{active: activeTab[movieRecommend.id] === 'trailer'}" class="pr-4">Fragman</button>
-            </div>
-            
-            <!-- Movie Details -->
-            <div v-if="activeTab[movieRecommend.id] == 'poster'">
-              <MovieCard :movie="movieRecommend" class="w-[400px] h-auto"/>
-            </div>
-        
-            <!-- Movie Trailer -->
-            <div v-else-if="activeTab[movieRecommend.id] === 'trailer'" class=" relative w-full">
-              <div v-if="trailer[movieRecommend.id]" class="relative pb-[56.25%] h-0 overflow-hidden rounded">
-                <Youtube  
-                  :src="`https://www.youtube.com/watch?v=${trailer[movieRecommend.id].key}`" 
-                  :video-id="trailer[movieRecommend.id].key" 
-                  class="absolute top-0 left-0 w-full h-full"/>
-                  
-                  <div class="text-black pt-20"><p><em>{{ movieRecommend.overview }}sdxfcgvbhnjkmlöşç vgbhjnkmlö fghıjlokşpl xfcghvjbknlm</em></p></div>
+          <div class="sticky bg-[#111827] z-10 top-0 pb-4 text-white">
+            <h3 >Recommendations:</h3>
+          </div>
+          
+          <div class="text-white ">
+            <p><em>{{ movieStore.naturalRecommendation }}
+              xdcfvgbhnjmklfksbdvghbrjebvsrbv hj nvjerkvnge jergknwrgl fnjkreljnre newkgşnrwjkng
+              xdcfvgbhnjmklfksbdvghbrjebvsrbv hj nvjerkvnge jergknwrgl fnjkreljnre newkgşnrwjkng
+              xdcfvgbhnjmklfksbdvghbrjebvsrbv hj nvjerkvnge jergknwrgl fnjkreljnre newkgşnrwjkng
+              xdcfvgbhnjmklfksbdvghbrjebvsrbv hj nvjerkvnge jergknwrgl fnjkreljnre newkgşnrwjkng
+              xdcfvgbhnjmklfksbdvghbrjebvsrbv hj nvjerkvnge jergknwrgl fnjkreljnre newkgşnrwjkng
+            </em></p>
+          </div>
+  
+          <div v-if="movieStore.movieDetails.length"  class="grid grid-cols-1 sm:grid-cols-2 mt-8 gap-4"> <!--sm:grid-cols-2 max-h-[200px] sm:max-h-[750px] overflow-y-auto py-20 -->
+            <div v-for="movieRecommend in movieStore.movieDetails" :key="movieRecommend.id" class="mb-2">
+              <div class="tabs">
+                <button @click="activeTab[movieRecommend.id] = 'poster'" :class="{ active: activeTab[movieRecommend.id] === 'poster' }">Afiş</button>
+                <button @click="() => {
+                    activeTab[movieRecommend.id] = 'trailer'; 
+                    if(!trailer[movieRecommend.id]) loadTrailer(movieRecommend.id);
+                }" :class="{active: activeTab[movieRecommend.id] === 'trailer'}" class="pr-4">Trailer</button>
               </div>
               
-              <div v-else>Fragman bulunamadı.</div>
-            </div>  
-  
-          </div >
+              <!-- Movie Details -->
+              <div v-if="activeTab[movieRecommend.id] == 'poster'">
+                <MovieCard :movie="movieRecommend" class="w-[400px] h-auto"/>
+              </div>
+          
+              <!-- Movie Trailer -->
+              <div v-else-if="activeTab[movieRecommend.id] === 'trailer'" class=" relative w-full">
+                <div v-if="trailer[movieRecommend.id]" class="relative pb-[56.25%] h-0 overflow-hidden rounded">
+                  <Youtube  
+                    :src="`https://www.youtube.com/watch?v=${trailer[movieRecommend.id].key}`" 
+                    :video-id="trailer[movieRecommend.id].key" 
+                    class="absolute top-0 left-0 w-full h-full"/>
+                    
+                    <div class="text-black pt-20"><p><em>{{ movieRecommend.overview }}sdxfcgvbhnjkmlöşç vgbhjnkmlö fghıjlokşpl xfcghvjbknlm</em></p></div>
+                </div>
+                
+                <div v-else>We didn't find the trailer.</div>
+              </div>  
+    
+            </div >
+          </div>
         </div>
-        <button @click="showForm = true" class="button absolute bottom-4 right-4 mt-20 px-6 py-3">Yeniden Öneri Al</button>
+        <button @click="showForm = true" class="button bottom-4 right-4 mt-4 px-6 py-3">Try Again</button>
       </div>
     </div>
   </div>
@@ -157,8 +163,12 @@ const loadTrailer = async (movieId: number) => {
       transition: background 0.3s;
       
       &.active {
-        background: #ff4500;
+         background: #ffc928e6; /*#ff4500 */
+      }
+      &:hover {
+        background: #916d01; 
       }
     }
   }
+
 </style>

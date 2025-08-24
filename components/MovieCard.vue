@@ -20,14 +20,18 @@ function handleWatched() {
 <template>
   <div class="movie">
     <div class="movie-img">
-      <img :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`" alt="" class="img-poster"> <!--posterPath  -->
-      <p class="review">{{ movie.vote_average }}</p> <!--movie divinin içinde çünkü overview ü absolute olarak imagenin üstünde göstermek istiyoruz -->
-      <div class="actions bg-black bg-opacity-50 rounded-lg hover:bg-opacity-70 hover:translate-y-1 transition-all duration-300">  
+      <img :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`" alt="movie_poster" class="img-poster"> <!--posterPath  -->
+      <p class="review">{{ movie.vote_average.toFixed(1) }}</p> <!--movie divinin içinde çünkü overview ü absolute olarak imagenin üstünde göstermek istiyoruz -->
+      
+      <div class="actions bg-black/50 hover:bg-opacity-70  hover:translate-y-2 transition-all duration-500">  <!-- bg-black bg-opacity-50-->
         <button @click="handleFavorite" class="action-btn"><img src="/assets/imgs/FavoriteIcon.svg"></button>
         <button @click="handleWatched"  class="action-btn"><img src="/assets/imgs/WatchListIcon2.svg"></button>
         <button  class="action-btn"><img src="/assets/imgs/WatchedIcon.svg"></button>
       </div>
-      <p class="overview">{{ movie.overview }}</p>
+
+      <p class="overview">{{ movie.overview.slice(0, 300) }}
+        <span v-if="movie.overview.length > 300">...</span>
+      </p>
     </div>
     <div class="info">
         <p class="title">
@@ -35,7 +39,7 @@ function handleWatched() {
             <span v-if="movie.title.length > 25">...</span> <!-- direk p içerisine yazsaydı 25 karakterden az ise ... gözükmüş olcaktı o yüzden span ile 25den fazlaysa gösteriyoruz-->
         </p>
         <p class="release">
-            Realesed:
+            Released Date:
             {{ 
                 new Date(movie.release_date).toLocaleString('en-us', {
                     month: 'long',
@@ -48,9 +52,9 @@ function handleWatched() {
                     class="button button-light" 
                     :to="{name: 'movies-id', params: { id: movie.id}}"
                     >
-                    Get More Info
-        </NuxtLink>
-    </div>
+                    More Info
+        </NuxtLink> 
+    </div> <!-- Get More Info -->
   </div>
 </template>
 
@@ -89,18 +93,19 @@ function handleWatched() {
       height: 40px;
       background-color: #c92502;
       color: #fff;
-      border-radius: 0 0 16px 0;
+      border-radius: 0 0 8px 0;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
         0 2px 4px -1px rgba(0, 0, 0, 0.06);
     }
     .actions {
       position: absolute;
-      top: 0;
+      top: -9px;
       right: 0;
       display: flex;
       flex-direction: column;
       gap: 8px;
       padding: 8px;
+      border-radius: 0 0 0 8px;
     }
     .action-btn {
       background-color: transparent;//rgba(0, 0, 0, 0.5);
@@ -109,13 +114,14 @@ function handleWatched() {
       border-radius: 50%;
       width: 32px;
       height: 32px;
+      padding-top: 4px;
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
       transition: background-color 0.3s ease;
       &:hover {
-        background-color: #a71e01; //rgba(255, 255, 255, 0.3);darken the color on hover
+        background-color: #ffc928e6; //#916d01 #a71e01  rgba(255, 255, 255, 0.3);darken the color on hover
       }
     }
     .overview {
@@ -123,7 +129,7 @@ function handleWatched() {
       line-height: 1.5;
       position: absolute;
       bottom: 0;
-      background-color: rgba(201, 38, 2, 0.9);
+      background-color: #fbbf24; //#ffc928e6  rgba(201, 38, 2, 0.9)
       padding: 12px;
       color: #fff;
       transform: translateY(100%); //translate Y 100 which will take this off by 100 percents meaning NOTHİNG WİLL BE SHOWİNG
